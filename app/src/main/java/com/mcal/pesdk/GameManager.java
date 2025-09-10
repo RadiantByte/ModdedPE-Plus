@@ -66,7 +66,9 @@ public class GameManager {
             patchAssetPath.add(splitPath);
         }
 
-        AssetOverrideManager.addAssetOverride(activity.getAssets(), patchAssetPath.toString());
+        for (String assetPath : patchAssetPath) {
+            AssetOverrideManager.addAssetOverride(activity.getAssets(), assetPath);
+        }
 
         if (!safeMode) {
             Gson gson = new Gson();

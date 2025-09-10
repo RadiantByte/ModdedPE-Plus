@@ -49,33 +49,78 @@ object LibraryLoader {
     @JvmStatic
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     fun loadFMod(mcLibsPath: String) {
-        runCatching {
-            System.load(File(mcLibsPath, "libfmod.so").absolutePath)
-        }
+        loadLibraryWithFallback("libfmod.so", mcLibsPath)
     }
 
     @JvmStatic
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     fun loadMediaDecoders(mcLibsPath: String) {
-        runCatching {
-            System.load(File(mcLibsPath, "libMediaDecoders_Android.so").absolutePath)
-        }
+        loadLibraryWithFallback("libMediaDecoders_Android.so", mcLibsPath)
     }
 
     @JvmStatic
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     fun loadMinecraftPE(mcLibsPath: String) {
-        runCatching {
-            System.load(File(mcLibsPath, "libminecraftpe.so").absolutePath)
-        }
+        loadLibraryWithFallback("libminecraftpe.so", mcLibsPath)
     }
 
     @JvmStatic
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     fun loadCppShared(mcLibsPath: String) {
-        runCatching {
-            System.load(File(mcLibsPath, "libc++_shared.so").absolutePath)
+        loadLibraryWithFallback("libc++_shared.so", mcLibsPath)
+    }
+
+    private fun loadLibraryWithFallback(libraryName: String, primaryPath: String) {
+        val primaryFile = File(primaryPath, libraryName)
+        android.util.Log.d("LibraryLoader", "Attempting to load $libraryName from $primaryPath")
+
+        if (primaryFile.exists() && primaryFile.length() > 0) {
+            runCatching {
+                System.load(primaryFile.absolutePath)
+                android.util.Log.d("LibraryLoader", "Successfully loaded $libraryName from primary path")
+                return
+            }.onFailure { e ->
+                android.util.Log.w("LibraryLoader", "Failed to load $libraryName from primary path", e)
+            }
+        } else {
+            android.util.Log.w("LibraryLoader", "$libraryName not found or empty at primary path: ${primaryFile.absolutePath}")
         }
+
+        val fallbackPaths = getFallbackPaths(libraryName)
+        for (fallbackPath in fallbackPaths) {
+            val fallbackFile = File(fallbackPath)
+            if (fallbackFile.exists() && fallbackFile.length() > 0) {
+                runCatching {
+                    System.load(fallbackFile.absolutePath)
+                    android.util.Log.i("LibraryLoader", "Successfully loaded $libraryName from fallback: $fallbackPath")
+                    return
+                }.onFailure { e ->
+                    android.util.Log.w("LibraryLoader", "Failed to load $libraryName from fallback: $fallbackPath", e)
+                }
+            }
+        }
+
+        val libNameWithoutExtension = libraryName.removePrefix("lib").removeSuffix(".so")
+        runCatching {
+            System.loadLibrary(libNameWithoutExtension)
+            android.util.Log.i("LibraryLoader", "Successfully loaded $libraryName as system library")
+        }.onFailure { e ->
+            android.util.Log.e("LibraryLoader", "Failed to load $libraryName from all sources", e)
+        }
+    }
+
+    private fun getFallbackPaths(libraryName: String): List<String> {
+        val context = com.mcal.mcpelauncher.ModdedPEApplication.getContext()
+        val fallbackPaths = mutableListOf<String>()
+
+        fallbackPaths.add("${context.filesDir}/native/$libraryName")
+
+        fallbackPaths.add("${context.applicationInfo.nativeLibraryDir}/$libraryName")
+
+        fallbackPaths.add("${context.filesDir.parent}/lib/$libraryName")
+
+        android.util.Log.d("LibraryLoader", "Fallback paths for $libraryName: ${fallbackPaths.joinToString()}")
+        return fallbackPaths
     }
 
     @JvmStatic

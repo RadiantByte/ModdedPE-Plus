@@ -44,9 +44,23 @@ public class MinecraftInfo {
     public MinecraftInfo(@NotNull Context context) {
         mContext = context;
         try {
-            mMCContext = context.createPackageContext(Preferences.getMinecraftPackageName(), Context.CONTEXT_IGNORE_SECURITY | Context.CONTEXT_INCLUDE_CODE);
+            String packageName = Preferences.getMinecraftPackageName();
+            android.util.Log.d("MinecraftInfo", "Attempting to create context for package: " + packageName);
+
+            mMCContext = context.createPackageContext(packageName, Context.CONTEXT_IGNORE_SECURITY | Context.CONTEXT_INCLUDE_CODE);
+            android.util.Log.d("MinecraftInfo", "Successfully created Minecraft context");
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            android.util.Log.e("MinecraftInfo", "Minecraft package not found: " + Preferences.getMinecraftPackageName(), e);
+
+            String detectedPackage = MinecraftPackageHelper.INSTANCE.autoDetectMinecraftPackage(context);
+            if (detectedPackage != null) {
+                try {
+                    mMCContext = context.createPackageContext(detectedPackage, Context.CONTEXT_IGNORE_SECURITY | Context.CONTEXT_INCLUDE_CODE);
+                    android.util.Log.i("MinecraftInfo", "Successfully switched to detected package: " + detectedPackage);
+                } catch (PackageManager.NameNotFoundException e2) {
+                    android.util.Log.e("MinecraftInfo", "Failed to create context for detected package: " + detectedPackage, e2);
+                }
+            }
         }
 
         AssetOverrideManager.newInstance();

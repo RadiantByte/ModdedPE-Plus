@@ -37,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 
 import java.io.File;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,36 +76,60 @@ public class Preloader {
         boolean safeMode = Preferences.isSafeMode();
 
         try {
+            Log.i("Preloader", "Starting native library preloading process");
+
+            Log.d("Preloader", "Extracting Minecraft libraries...");
             new SplitParser(context).parseMinecraft();
 
             mPreloadListener.onLoadNativeLibs();
 
+            String nativeLibDir = MinecraftInfo.getMinecraftPackageNativeLibraryDir();
+            Log.d("Preloader", "Native library directory: " + nativeLibDir);
+
             mPreloadListener.onLoadCppSharedLib();
-            LibraryLoader.loadCppShared(MinecraftInfo.getMinecraftPackageNativeLibraryDir());
+            Log.d("Preloader", "Loading libc++_shared.so...");
+            LibraryLoader.loadCppShared(nativeLibDir);
 
             mPreloadListener.onLoadFModLib();
-            LibraryLoader.loadFMod(MinecraftInfo.getMinecraftPackageNativeLibraryDir());
+            Log.d("Preloader", "Loading libfmod.so...");
+            LibraryLoader.loadFMod(nativeLibDir);
 
             mPreloadListener.onLoadMediaDecoders();
-            LibraryLoader.loadMediaDecoders(MinecraftInfo.getMinecraftPackageNativeLibraryDir());
+            Log.d("Preloader", "Loading libMediaDecoders_Android.so...");
+            LibraryLoader.loadMediaDecoders(nativeLibDir);
 
             mPreloadListener.onLoadMinecraftPELib();
-            LibraryLoader.loadMinecraftPE(MinecraftInfo.getMinecraftPackageNativeLibraryDir());
+            Log.d("Preloader", "Loading libminecraftpe.so...");
+            LibraryLoader.loadMinecraftPE(nativeLibDir);
 
             mPreloadListener.onLoadGameLauncherLib();
-            LibraryLoader.loadLauncher(MinecraftInfo.getMinecraftPackageNativeLibraryDir());
+            Log.d("Preloader", "Loading launcher core...");
+            LibraryLoader.loadLauncher(nativeLibDir);
+
             if (!safeMode) {
                 mPreloadListener.onLoadSubstrateLib();
+                Log.d("Preloader", "Loading substrate...");
                 LibraryLoader.loadSubstrate();
 
                 mPreloadListener.onLoadXHookLib();
+                Log.d("Preloader", "Loading xhook...");
                 LibraryLoader.loadXHook();
 
                 mPreloadListener.onLoadPESdkLib();
-                LibraryLoader.loadNModAPI(MinecraftInfo.getMinecraftPackageNativeLibraryDir());
+                Log.d("Preloader", "Loading NMod API...");
+                LibraryLoader.loadNModAPI(nativeLibDir);
+            } else {
+                Log.i("Preloader", "Safe mode enabled - skipping advanced libraries");
             }
+
             mPreloadListener.onFinishedLoadingNativeLibs();
+            Log.i("Preloader", "Native library preloading completed successfully");
         } catch (Throwable throwable) {
+            Log.e("Preloader", "Failed to load native libraries", throwable);
+
+            String errorDetails = getDetailedErrorInfo(context, throwable);
+            Log.e("Preloader", "Error details: " + errorDetails);
+
             throw new PreloadException(PreloadException.TYPE_LOAD_LIBS_FAILED, throwable);
         }
 
@@ -229,6 +254,44 @@ public class Preloader {
             }
         }
         return true;
+    }
+
+    private String getDetailedErrorInfo(Context context, Throwable throwable) {
+        StringBuilder info = new StringBuilder();
+        info.append("Error: ").append(throwable.getMessage()).append("\n");
+        info.append("Device ABI: ").append(com.mcal.pesdk.utils.ABIInfo.getABI()).append("\n\n");
+
+        info.append("Minecraft Installation Info:\n");
+        info.append(com.mcal.pesdk.utils.MinecraftPackageHelper.INSTANCE.getMinecraftInstallationInfo(context));
+        info.append("\n");
+
+        try {
+            String nativeDir = MinecraftInfo.getMinecraftPackageNativeLibraryDir();
+            File nativeDirFile = new File(nativeDir);
+            info.append("Native Library Directory:\n");
+            info.append("- Path: ").append(nativeDir).append("\n");
+            info.append("- Exists: ").append(nativeDirFile.exists()).append("\n");
+            if (nativeDirFile.exists()) {
+                File[] files = nativeDirFile.listFiles();
+                info.append("- File count: ").append(files != null ? files.length : 0).append("\n");
+                if (files != null && files.length > 0) {
+                    info.append("- Files: ");
+                    for (File file : files) {
+                        info.append(file.getName()).append(" (").append(file.length()).append(" bytes), ");
+                    }
+                    info.append("\n");
+                }
+            }
+        } catch (Exception e) {
+            info.append("- Error checking native dir: ").append(e.getMessage()).append("\n");
+        }
+
+        info.append("\nSuggested fixes:\n");
+        for (String suggestion : com.mcal.pesdk.utils.MinecraftPackageHelper.INSTANCE.suggestFixes(context)) {
+            info.append("- ").append(suggestion).append("\n");
+        }
+
+        return info.toString();
     }
 
     static class NModPreloadData {
