@@ -1,5 +1,6 @@
 [versions]
 agp = "8.11.0"
+gamesActivity = "4.0.0"
 kotlin = "2.2.10"
 compose-plugin = "1.8.2"
 
@@ -36,6 +37,7 @@ mediationsdk = "8.11.0"
 multidex = "2.0.1"
 okhttp = "5.1.0"
 pkix = "1.54.0.0"
+conscrypt-android = "2.5.2"
 preference-ktx = "1.2.1"
 recyclerview = "1.4.0"
 simple-xml = "2.7.1"
@@ -51,6 +53,7 @@ exposed = "0.61.0"
 xerial = "3.50.3.0"
 
 [libraries]
+androidx-games-activity = { module = "androidx.games:games-activity", version.ref = "gamesActivity" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 wortise-sdk = { module = "com.wortise:android-sdk", version.ref = "wortise-sdk" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity-ktx" }
@@ -87,6 +90,7 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 mediationsdk = { module = "com.ironsource.sdk:mediationsdk", version.ref = "mediationsdk" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 pkix = { module = "com.madgag.spongycastle:pkix", version.ref = "pkix" }
+conscrypt-android = { module = "org.conscrypt:conscrypt-android", version.ref = "conscrypt-android" }
 simple-xml = { module = "org.simpleframework:simple-xml", version.ref = "simple-xml" }
 
 #exposed

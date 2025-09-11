@@ -46,6 +46,7 @@ import com.mojang.android.StringValue;
 import com.mojang.minecraftpe.input.InputDeviceManager;
 import com.mojang.minecraftpe.platforms.Platform;
 import com.mojang.minecraftpe.python.PythonPackageLoader;
+import com.pairip.VMRunner;
 import org.fmod.FMOD;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;

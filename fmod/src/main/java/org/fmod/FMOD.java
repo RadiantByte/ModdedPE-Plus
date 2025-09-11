@@ -69,4 +69,16 @@ public class FMOD {
         }
         return false;
     }
+    public static int[] getDevices(int deviceType) {
+        Log.d("fmod", "FMOD::getDevices called with deviceType: " + deviceType);
+        return new int[0];
+    }
+    public static String getDeviceName(int deviceId) {
+        Log.d("fmod", "FMOD::getDeviceName called with deviceId: " + deviceId);
+        return "Default Device";
+    }
+    public static int getDeviceType(int deviceId) {
+        Log.d("fmod", "FMOD::getDeviceType called with deviceId: " + deviceId);
+        return 0;
+    }
 }

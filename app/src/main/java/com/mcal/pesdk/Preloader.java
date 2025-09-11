@@ -37,10 +37,12 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 
 import java.io.File;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.Security;
 import java.util.ArrayList;
+
+import org.conscrypt.Conscrypt;
 
 /**
  * @author Тимашков Иван
@@ -97,6 +99,20 @@ public class Preloader {
             mPreloadListener.onLoadMediaDecoders();
             Log.d("Preloader", "Loading libMediaDecoders_Android.so...");
             LibraryLoader.loadMediaDecoders(nativeLibDir);
+
+            Log.d("Preloader", "Loading libpairipcore.so...");
+            LibraryLoader.loadPairipCore(nativeLibDir);
+
+            Log.d("Preloader", "Initializing Conscrypt security provider...");
+            try {
+                Security.insertProviderAt(Conscrypt.newProvider(), 1);
+                Log.d("Preloader", "Conscrypt provider initialized successfully");
+            } catch (Exception e) {
+                Log.w("Preloader", "Failed to initialize Conscrypt provider: " + e.getMessage());
+            }
+
+            Log.d("Preloader", "Loading libmaesdk.so...");
+            LibraryLoader.loadMaeSdk(nativeLibDir);
 
             mPreloadListener.onLoadMinecraftPELib();
             Log.d("Preloader", "Loading libminecraftpe.so...");

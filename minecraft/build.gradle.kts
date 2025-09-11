@@ -33,7 +33,8 @@ dependencies {
     implementation(project(":microsoft:xal"))
     implementation(project(":microsoft:xbox"))
 
-    implementation("androidx.games:games-activity:4.0.0")
+    implementation(libs.conscrypt.android)
+    implementation(libs.androidx.games.activity)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.androidx.appcompat)

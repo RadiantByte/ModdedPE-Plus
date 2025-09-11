@@ -70,6 +70,24 @@ object LibraryLoader {
         loadLibraryWithFallback("libc++_shared.so", mcLibsPath)
     }
 
+    @JvmStatic
+    @SuppressLint("UnsafeDynamicallyLoadedCode")
+    fun loadPairipCore(mcLibsPath: String) {
+        loadLibraryWithFallback("libpairipcore.so", mcLibsPath)
+    }
+
+    @JvmStatic
+    @SuppressLint("UnsafeDynamicallyLoadedCode")
+    fun loadConscryptJni(mcLibsPath: String) {
+        loadLibraryWithFallback("libconscrypt_jni.so", mcLibsPath)
+    }
+
+    @JvmStatic
+    @SuppressLint("UnsafeDynamicallyLoadedCode")
+    fun loadMaeSdk(mcLibsPath: String) {
+        loadLibraryWithFallback("libmaesdk.so", mcLibsPath)
+    }
+
     private fun loadLibraryWithFallback(libraryName: String, primaryPath: String) {
         val primaryFile = File(primaryPath, libraryName)
         android.util.Log.d("LibraryLoader", "Attempting to load $libraryName from $primaryPath")
