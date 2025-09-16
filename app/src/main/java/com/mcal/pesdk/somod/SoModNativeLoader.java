@@ -9,6 +9,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author <a href="https://github.com/RadiantByte">RadiantByte</a>
+ */
+
 public class SoModNativeLoader {
     private static final String TAG = "SoModNativeLoader";
 

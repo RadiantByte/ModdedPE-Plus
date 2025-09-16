@@ -1,5 +1,9 @@
 package com.mcal.pesdk.somod;
 
+/**
+ * @author <a href="https://github.com/RadiantByte">RadiantByte</a>
+ */
+
 public class SoMod {
     private final String fileName;
     private boolean enabled;

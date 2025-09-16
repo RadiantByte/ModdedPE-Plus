@@ -15,6 +15,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * @author <a href="https://github.com/RadiantByte">RadiantByte</a>
+ */
+
 public class SoModManager {
     private final Context context;
     private final File modsDir;
@@ -99,6 +104,17 @@ public class SoModManager {
         } else {
             enabledMap.put(target.getName(), true);
         }
+        saveConfig();
+    }
+
+    public synchronized void removeSo(String fileName) {
+        if (fileName == null) return;
+        File target = new File(modsDir, fileName);
+        if (target.exists()) {
+            try { target.delete(); } catch (Throwable ignored) {}
+        }
+        enabledMap.remove(fileName);
+        modOrder.remove(fileName);
         saveConfig();
     }
 

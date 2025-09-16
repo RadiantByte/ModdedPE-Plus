@@ -53,7 +53,6 @@ import com.mcal.mcpelauncher.activities.NModFilePickerActivity;
 import com.mcal.mcpelauncher.activities.NModPackagePickerActivity;
 import com.mcal.mcpelauncher.utils.DataPreloader;
 import com.mcal.mcpelauncher.ui.view.Dialogs;
-import com.mcal.mcpelauncher.utils.DataPreloader;
 import com.mcal.mcpelauncher.utils.PreloadingFinishedListener;
 import com.mcal.pesdk.nmod.ExtractFailedException;
 import com.mcal.pesdk.nmod.NMod;
@@ -68,6 +67,7 @@ import java.util.ArrayList;
  * @author Тимашков Иван
  * @author https://github.com/TimScriptov
  */
+
 public class MainManageNModFragment extends Fragment implements PreloadingFinishedListener {
     private static final int MSG_SHOW_PROGRESS_DIALOG = 1;
     private static final int MSG_HIDE_PROGRESS_DIALOG = 2;
@@ -120,10 +120,8 @@ public class MainManageNModFragment extends Fragment implements PreloadingFinish
 
         if (resultCode == AppCompatActivity.RESULT_OK) {
             if (requestCode == NModPackagePickerActivity.REQUEST_PICK_PACKAGE) {
-                //picked from package
                 onPickedNModFromPackage(data.getExtras().getString(NModPackagePickerActivity.TAG_PACKAGE_NAME));
             } else if (requestCode == NModFilePickerActivity.REQUEST_PICK_FILE) {
-                //picked from storage
                 onPickedNModFromStorage(data.getExtras().getString(NModFilePickerActivity.TAG_FILE_PATH));
             }
         }
@@ -147,7 +145,6 @@ public class MainManageNModFragment extends Fragment implements PreloadingFinish
                     }
                     ZippedNMod zippedNMod = ModdedPEApplication.getMPESdk().getNModAPI().archiveZippedNMod(finalPath);
                     if (ModdedPEApplication.getMPESdk().getNModAPI().importNMod(zippedNMod)) {
-                        //replaced
                         mNModProcesserHandler.sendEmptyMessage(MSG_HIDE_PROGRESS_DIALOG);
                         mNModProcesserHandler.sendEmptyMessage(MSG_SHOW_REPLACED_DIALOG);
                     } else {
@@ -156,7 +153,7 @@ public class MainManageNModFragment extends Fragment implements PreloadingFinish
                     }
                     mNModProcesserHandler.sendEmptyMessage(MSG_REFRESH_NMOD_DATA);
 
-                } catch (ExtractFailedException archiveFailedException) {
+                } catch (com.mcal.pesdk.nmod.ExtractFailedException archiveFailedException) {
                     mNModProcesserHandler.sendEmptyMessage(MSG_HIDE_PROGRESS_DIALOG);
                     Message message = new Message();
                     message.what = MSG_SHOW_FAILED_DIALOG;
@@ -183,7 +180,6 @@ public class MainManageNModFragment extends Fragment implements PreloadingFinish
                 try {
                     PackagedNMod packagedNMod = ModdedPEApplication.getMPESdk().getNModAPI().archivePackagedNMod(finalPkgName);
                     if (ModdedPEApplication.getMPESdk().getNModAPI().importNMod(packagedNMod)) {
-                        //replaced
                         mNModProcesserHandler.sendEmptyMessage(MSG_HIDE_PROGRESS_DIALOG);
                         mNModProcesserHandler.sendEmptyMessage(MSG_SHOW_REPLACED_DIALOG);
                     } else {
@@ -251,7 +247,9 @@ public class MainManageNModFragment extends Fragment implements PreloadingFinish
     }
 
     public void refreshNModDatas() {
-        if (ModdedPEApplication.getMPESdk().getNModAPI().getImportedEnabledNMods().isEmpty() && ModdedPEApplication.getMPESdk().getNModAPI().getImportedDisabledNMods().isEmpty()) {
+        boolean hasSoMods = !new com.mcal.pesdk.somod.SoModManager(requireContext()).getMods().isEmpty();
+        boolean hasNMods = !ModdedPEApplication.getMPESdk().getNModAPI().getImportedEnabledNMods().isEmpty() || !ModdedPEApplication.getMPESdk().getNModAPI().getImportedDisabledNMods().isEmpty();
+        if (!hasNMods && !hasSoMods) {
             mRootView.findViewById(R.id.moddedpe_manage_nmod_layout_nmods).setVisibility(View.GONE);
             mRootView.findViewById(R.id.moddedpe_manage_nmod_layout_no_found).setVisibility(View.VISIBLE);
         } else {
@@ -417,6 +415,62 @@ public class MainManageNModFragment extends Fragment implements PreloadingFinish
         return convertView;
     }
 
+    @NotNull
+    private View createEnabledSoModView(com.mcal.pesdk.somod.SoMod so) {
+        View convertView = LayoutInflater.from(getActivity()).inflate(R.layout.moddedpe_nmod_item_active, null);
+        AppCompatTextView textTitle = convertView.findViewById(R.id.nmod_enabled_item_card_view_text_name);
+        textTitle.setText(so.getFileName());
+        AppCompatTextView textPkgTitle = convertView.findViewById(R.id.nmod_enabled_item_card_view_text_package_name);
+        textPkgTitle.setText(".so mod");
+        AppCompatImageView imageIcon = convertView.findViewById(R.id.nmod_enabled_item_card_view_image_view);
+        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.mcd_null_pack);
+        imageIcon.setImageBitmap(icon);
+        AppCompatImageButton minusButton = convertView.findViewById(R.id.nmod_enabled_minus);
+        minusButton.setOnClickListener(p1 -> {
+            com.mcal.pesdk.somod.SoModManager mgr = new com.mcal.pesdk.somod.SoModManager(requireContext());
+            mgr.setEnabled(so.getFileName(), false);
+            refreshNModDatas();
+        });
+        AppCompatImageButton downButton = convertView.findViewById(R.id.nmod_enabled_arrow_down);
+        downButton.setOnClickListener(p1 -> {});
+        AppCompatImageButton upButton = convertView.findViewById(R.id.nmod_enabled_arrow_up);
+        upButton.setOnClickListener(p1 -> {});
+        return convertView;
+    }
+
+    @NotNull
+    private View createDisabledSoModView(com.mcal.pesdk.somod.SoMod so) {
+        View convertView = LayoutInflater.from(getActivity()).inflate(R.layout.moddedpe_nmod_item_disabled, null);
+        AppCompatTextView textTitle = convertView.findViewById(R.id.nmod_disabled_item_card_view_text_name);
+        textTitle.setText(so.getFileName());
+        AppCompatTextView textPkgTitle = convertView.findViewById(R.id.nmod_disabled_item_card_view_text_package_name);
+        textPkgTitle.setText(".so mod");
+        AppCompatImageView imageIcon = convertView.findViewById(R.id.nmod_disabled_item_card_view_image_view);
+        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.mcd_null_pack);
+        imageIcon.setImageBitmap(icon);
+        AppCompatImageButton addButton = convertView.findViewById(R.id.nmod_disabled_add);
+        addButton.setOnClickListener(p1 -> {
+            com.mcal.pesdk.somod.SoModManager mgr = new com.mcal.pesdk.somod.SoModManager(requireContext());
+            mgr.setEnabled(so.getFileName(), true);
+            refreshNModDatas();
+        });
+        AppCompatImageButton deleteButton = convertView.findViewById(R.id.nmod_disabled_delete);
+        deleteButton.setOnClickListener(p1 -> {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(requireActivity());
+            dialog.setTitle(R.string.nmod_delete_title);
+            dialog.setMessage(R.string.nmod_delete_message);
+            dialog.setPositiveButton(android.R.string.ok, (d, w) -> {
+                com.mcal.pesdk.somod.SoModManager mgr = new com.mcal.pesdk.somod.SoModManager(requireContext());
+                mgr.removeSo(so.getFileName());
+                refreshNModDatas();
+                d.dismiss();
+            });
+            dialog.setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss());
+            dialog.show();
+        });
+        return convertView;
+    }
+
     private void onAddNewNMod() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(requireActivity());
         dialog.setTitle(R.string.nmod_add_new_title);
@@ -542,50 +596,74 @@ public class MainManageNModFragment extends Fragment implements PreloadingFinish
     private class NModListAdapter extends BaseAdapter {
         private final ArrayList<NMod> mImportedEnabledNMods = new ArrayList<>();
         private final ArrayList<NMod> mImportedDisabledNMods = new ArrayList<>();
+        private final ArrayList<com.mcal.pesdk.somod.SoMod> mSoEnabledMods = new ArrayList<>();
+        private final ArrayList<com.mcal.pesdk.somod.SoMod> mSoDisabledMods = new ArrayList<>();
+
+        private static final int TYPE_HEADER = 0;
+        private static final int TYPE_ITEM_NMOD = 1;
+        private static final int TYPE_ITEM_SOMOD = 2;
+        private static final int TYPE_ADD_NEW = 3;
+
+        private static class Row {
+            int type;
+            Object payload;
+            Row(int type, Object payload) { this.type = type; this.payload = payload; }
+        }
+
+        private final ArrayList<Row> rows = new ArrayList<>();
 
         NModListAdapter() {
             mImportedEnabledNMods.addAll(ModdedPEApplication.getMPESdk().getNModAPI().getImportedEnabledNMods());
             mImportedDisabledNMods.addAll(ModdedPEApplication.getMPESdk().getNModAPI().getImportedDisabledNMods());
+            for (com.mcal.pesdk.somod.SoMod so : new com.mcal.pesdk.somod.SoModManager(requireContext()).getMods()) {
+                if (so.isEnabled()) mSoEnabledMods.add(so); else mSoDisabledMods.add(so);
+            }
+            buildRows();
+        }
+
+        private void buildRows() {
+            rows.clear();
+            boolean hasEnabled = !mImportedEnabledNMods.isEmpty() || !mSoEnabledMods.isEmpty();
+            if (hasEnabled) {
+                rows.add(new Row(TYPE_HEADER, R.string.nmod_enabled_title));
+                for (NMod n : mImportedEnabledNMods) rows.add(new Row(TYPE_ITEM_NMOD, n));
+                for (com.mcal.pesdk.somod.SoMod s : mSoEnabledMods) rows.add(new Row(TYPE_ITEM_SOMOD, s));
+            }
+            rows.add(new Row(TYPE_HEADER, R.string.nmod_disabled_title));
+            for (NMod n : mImportedDisabledNMods) rows.add(new Row(TYPE_ITEM_NMOD, n));
+            for (com.mcal.pesdk.somod.SoMod s : mSoDisabledMods) rows.add(new Row(TYPE_ITEM_SOMOD, s));
+            rows.add(new Row(TYPE_ADD_NEW, null));
         }
 
         @Override
-        public int getCount() {
-            int count = mImportedEnabledNMods.size() + mImportedDisabledNMods.size() + 2;
-            if (mImportedEnabledNMods.size() > 0)
-                ++count;
-            return count;
-        }
+        public int getCount() { return rows.size(); }
 
         @Override
-        public Object getItem(int position) {
-            return position;
-        }
+        public Object getItem(int position) { return rows.get(position); }
 
         @Override
-        public long getItemId(int position) {
-            return position;
-        }
+        public long getItemId(int position) { return position; }
+
+        @Override
+        public int getItemViewType(int position) { return rows.get(position).type; }
+
+        @Override
+        public int getViewTypeCount() { return 4; }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            boolean shouldShowEnabledList = mImportedEnabledNMods.size() > 0 && (position < mImportedEnabledNMods.size() + 1);
-            if (shouldShowEnabledList) {
-                if (position == 0) {
-                    return createCutlineView(R.string.nmod_enabled_title);
-                } else {
-                    int nmodIndex = position - 1;
-                    return createEnabledNModView(mImportedEnabledNMods.get(nmodIndex));
-                }
+            Row row = rows.get(position);
+            if (row.type == TYPE_HEADER) {
+                int resId = (Integer) row.payload;
+                return createCutlineView(resId);
+            } else if (row.type == TYPE_ITEM_NMOD) {
+                return ((NMod) row.payload).isBugPack() ? createEnabledNModView((NMod) row.payload) : (((NMod) row.payload).getInfo() != null && ModdedPEApplication.getMPESdk().getNModAPI().getImportedEnabledNMods().contains((NMod) row.payload) ? createEnabledNModView((NMod) row.payload) : createDisabledNModView((NMod) row.payload));
+            } else if (row.type == TYPE_ITEM_SOMOD) {
+                com.mcal.pesdk.somod.SoMod so = (com.mcal.pesdk.somod.SoMod) row.payload;
+                return so.isEnabled() ? createEnabledSoModView(so) : createDisabledSoModView(so);
+            } else {
+                return createAddNewView();
             }
-            int disableStartPosition = mImportedEnabledNMods.size() > 0 ? mImportedEnabledNMods.size() + 1 : 0;
-            if (position == disableStartPosition) {
-                return createCutlineView(R.string.nmod_disabled_title);
-            }
-            int itemInListPosition = position - 1 - disableStartPosition;
-            if (itemInListPosition >= 0 && itemInListPosition < mImportedDisabledNMods.size()) {
-                return createDisabledNModView(mImportedDisabledNMods.get(itemInListPosition));
-            }
-            return createAddNewView();
         }
     }
 }
