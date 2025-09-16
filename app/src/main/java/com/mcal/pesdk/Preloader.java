@@ -118,6 +118,14 @@ public class Preloader {
             Log.d("Preloader", "Loading libminecraftpe.so...");
             LibraryLoader.loadMinecraftPE(nativeLibDir);
 
+            // Load standalone .so mods
+            try {
+                com.mcal.pesdk.somod.SoModManager soManager = new com.mcal.pesdk.somod.SoModManager(context);
+                com.mcal.pesdk.somod.SoModNativeLoader.loadEnabledSoMods(soManager, context.getCacheDir());
+            } catch (Throwable t) {
+                Log.w("Preloader", "SoMod loading skipped due to error: " + t.getMessage());
+            }
+
             mPreloadListener.onLoadGameLauncherLib();
             Log.d("Preloader", "Loading launcher core...");
             LibraryLoader.loadLauncher(nativeLibDir);

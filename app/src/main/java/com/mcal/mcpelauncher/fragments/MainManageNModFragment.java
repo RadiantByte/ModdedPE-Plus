@@ -137,6 +137,14 @@ public class MainManageNModFragment extends Fragment implements PreloadingFinish
             public void run() {
                 mNModProcesserHandler.sendEmptyMessage(MSG_SHOW_PROGRESS_DIALOG);
                 try {
+                    if (finalPath != null && finalPath.toLowerCase().endsWith(".so")) {
+                        com.mcal.pesdk.somod.SoModManager mgr = new com.mcal.pesdk.somod.SoModManager(requireContext());
+                        mgr.importSoFile(new java.io.File(finalPath));
+                        mNModProcesserHandler.sendEmptyMessage(MSG_HIDE_PROGRESS_DIALOG);
+                        mNModProcesserHandler.sendEmptyMessage(MSG_SHOW_SUCCEED_DIALOG);
+                        mNModProcesserHandler.sendEmptyMessage(MSG_REFRESH_NMOD_DATA);
+                        return;
+                    }
                     ZippedNMod zippedNMod = ModdedPEApplication.getMPESdk().getNModAPI().archiveZippedNMod(finalPath);
                     if (ModdedPEApplication.getMPESdk().getNModAPI().importNMod(zippedNMod)) {
                         //replaced
@@ -153,6 +161,12 @@ public class MainManageNModFragment extends Fragment implements PreloadingFinish
                     Message message = new Message();
                     message.what = MSG_SHOW_FAILED_DIALOG;
                     message.obj = archiveFailedException;
+                    mNModProcesserHandler.sendMessage(message);
+                } catch (Throwable t) {
+                    mNModProcesserHandler.sendEmptyMessage(MSG_HIDE_PROGRESS_DIALOG);
+                    Message message = new Message();
+                    message.what = MSG_SHOW_FAILED_DIALOG;
+                    message.obj = new com.mcal.pesdk.nmod.ExtractFailedException(com.mcal.pesdk.nmod.ExtractFailedException.TYPE_IO_EXCEPTION, t);
                     mNModProcesserHandler.sendMessage(message);
                 }
 

@@ -94,6 +94,15 @@ public class ImportNModActivity extends BaseActivity {
         public void run() {
             super.run();
             try {
+                if (mTargetFile != null && mTargetFile.getName().toLowerCase().endsWith(".so")) {
+                    com.mcal.pesdk.somod.SoModManager mgr = new com.mcal.pesdk.somod.SoModManager(ImportNModActivity.this);
+                    mgr.importSoFile(mTargetFile);
+                    Message msg = new Message();
+                    msg.what = MSG_SUCCEED;
+                    msg.obj = null;
+                    mUIHandler.sendMessage(msg);
+                    return;
+                }
                 ZippedNMod zippedNMod = ModdedPEApplication.getMPESdk().getNModAPI().archiveZippedNMod(mTargetFile.getAbsolutePath());
                 ModdedPEApplication.getMPESdk().getNModAPI().importNMod(zippedNMod);
                 Message msg = new Message();
@@ -104,6 +113,11 @@ public class ImportNModActivity extends BaseActivity {
                 Message msg = new Message();
                 msg.what = MSG_FAILED;
                 msg.obj = archiveFailedException;
+                mUIHandler.sendMessage(msg);
+            } catch (Throwable t) {
+                Message msg = new Message();
+                msg.what = MSG_FAILED;
+                msg.obj = new com.mcal.pesdk.nmod.ExtractFailedException(com.mcal.pesdk.nmod.ExtractFailedException.TYPE_IO_EXCEPTION, t);
                 mUIHandler.sendMessage(msg);
             }
         }
