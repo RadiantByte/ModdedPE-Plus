@@ -23,7 +23,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
@@ -49,6 +51,8 @@ import com.mcal.mcpelauncher.R;
 import com.mcal.mcpelauncher.activities.NModDescriptionActivity;
 import com.mcal.mcpelauncher.activities.NModFilePickerActivity;
 import com.mcal.mcpelauncher.activities.NModPackagePickerActivity;
+import com.mcal.mcpelauncher.utils.DataPreloader;
+import com.mcal.mcpelauncher.ui.view.Dialogs;
 import com.mcal.mcpelauncher.utils.DataPreloader;
 import com.mcal.mcpelauncher.utils.PreloadingFinishedListener;
 import com.mcal.pesdk.nmod.ExtractFailedException;
@@ -416,11 +420,20 @@ public class MainManageNModFragment extends Fragment implements PreloadingFinish
     }
 
     private boolean checkPermissions() {
-        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()) {
+                return true;
+            } else {
+                Dialogs.showScopedStorageDialog(requireContext());
+                return false;
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+            return true;
         }
-        return true;
     }
 
     @Override
