@@ -23,9 +23,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.view.MenuItem;
-import android.view.View;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -99,23 +97,6 @@ public class MainActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q && !Environment.isExternalStorageManager()) {
             Dialogs.showScopedStorageDialog(this);
         }
-    }
-
-    @Override
-    protected void setDefaultActionBar() {
-        super.setDefaultActionBar();
-
-        final View burgerButton = getLayoutInflater().inflate(R.layout.moddedpe_ui_button_menu, null);
-        burgerButton.findViewById(R.id.moddedpe_ui_button_item_image_button).setOnClickListener(p1 -> {
-            PopupMenu popup = new PopupMenu(MainActivity.this, burgerButton);
-            popup.getMenuInflater().inflate(R.menu.moddedpe_main_menu, popup.getMenu());
-            popup.setOnMenuItemClickListener(item -> {
-                switchViewPager(item);
-                return true;
-            });
-            popup.show();
-        });
-        setActionBarViewRight(burgerButton);
     }
 
     private void switchViewPager(@NotNull MenuItem item) {

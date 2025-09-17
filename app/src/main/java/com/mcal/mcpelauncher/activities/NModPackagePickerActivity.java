@@ -60,7 +60,6 @@ public class NModPackagePickerActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nmod_picker_package);
         setResult(RESULT_CANCELED);
-        setActionBarButtonCloseRight();
 
         View loading_view = findViewById(R.id.nmod_picker_package_loading_view);
         loading_view.setVisibility(View.VISIBLE);

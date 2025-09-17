@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorAccent">#FF448aff</color>
-    <color name="colorPrimaryDark">#212121</color>
+    <color name="colorAccent">#FF0055</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorPrimary">#F3D721</color>
+    <color name="text_color_primary">#DE000000</color>
+    <color name="text_color_secondary">#99000000</color>
 
     <!-- Minecraft -->
     <color name="xbid_header_background">#ff121212</color>

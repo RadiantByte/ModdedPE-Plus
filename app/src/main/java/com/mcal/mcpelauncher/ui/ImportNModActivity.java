@@ -54,7 +54,6 @@ public class ImportNModActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nmod_importer_loading);
-        setActionBarButtonCloseRight();
         setTitle(R.string.import_nmod_title);
 
         File targetFile = getTargetNModFile();

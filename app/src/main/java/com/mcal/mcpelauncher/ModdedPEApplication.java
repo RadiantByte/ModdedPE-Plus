@@ -27,11 +27,13 @@ public class ModdedPEApplication extends Application {
         context = this;
         mPESdk = new PESdk(this);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (Preferences.isNightMode()) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+        if (!preferences.contains("night_mode")) {
+            preferences.edit().putBoolean("night_mode", true).apply();
         }
+
         DynamicColors.applyToActivitiesIfAvailable(this);
     }
 

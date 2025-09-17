@@ -62,7 +62,6 @@ public class MCPkgPickerActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pkg_picker);
         setResult(RESULT_CANCELED);
-        setActionBarButtonCloseRight();
 
         View loading_view = findViewById(R.id.pkg_picker_package_loading_view);
         loading_view.setVisibility(View.VISIBLE);

@@ -18,7 +18,7 @@
             android:summary="@string/preferences_summary_webview_engine"
             android:title="@string/preferences_title_webview_engine" />
         <androidx.preference.SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:icon="@drawable/ic_theme"
             android:key="night_mode"
             android:summary="@string/pref_night_mode_msg"
@@ -39,6 +39,7 @@
         android:title="@string/preferences_title_app">
         <androidx.preference.ListPreference
             android:defaultValue="0"
+            android:dialogTheme="@style/AlertDialogTheme"
             android:dialogTitle="@string/preferences_title_language"
             android:entries="@array/language_strings"
             android:entryValues="@array/language_values"

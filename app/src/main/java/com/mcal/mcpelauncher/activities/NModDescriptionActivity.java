@@ -87,7 +87,6 @@ public class NModDescriptionActivity extends BaseActivity {
         String minecraft_version_name = getIntent().getExtras().getString(TAG_MINECRAFT_VERSION_NAME);
 
         setTitle(name);
-        setActionBarButtonCloseRight();
 
         AppCompatImageView iconImage = findViewById(R.id.moddedpenmoddescriptionImageViewIcon);
         iconImage.setImageBitmap(icon);

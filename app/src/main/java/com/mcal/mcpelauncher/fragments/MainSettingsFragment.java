@@ -16,6 +16,7 @@
 package com.mcal.mcpelauncher.fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -49,9 +50,10 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
     private Preference mDataPathPreference;
     private Preference mPkgPreference;
 
+    @SuppressLint("PrivateResource")
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        addPreferencesFromResource(R.xml.preferences);
+        setPreferencesFromResource(R.xml.preferences, rootKey);
 
         Preference mWebViewCorePreference = findPreference("webview_engine");
         mWebViewCorePreference.setOnPreferenceClickListener(p1 -> {

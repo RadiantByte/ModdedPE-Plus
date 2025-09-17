@@ -81,7 +81,6 @@ public class NModFilePickerActivity extends BaseActivity {
         setContentView(R.layout.nmod_picker_file);
 
         setResult(RESULT_CANCELED, new Intent());
-        setActionBarButtonCloseRight();
 
         String pathString = null;
         try {

@@ -81,7 +81,6 @@ public class DirPickerActivity extends BaseActivity {
         findViewById(R.id.moddedpe_dir_picker_fab_select).setOnClickListener(p1 -> onSelectThisClicked());
 
         setResult(RESULT_CANCELED, new Intent());
-        setActionBarButtonCloseRight();
 
         String pathString = null;
         try {

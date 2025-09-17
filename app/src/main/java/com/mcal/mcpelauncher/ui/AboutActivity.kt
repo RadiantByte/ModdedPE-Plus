@@ -37,7 +37,6 @@ class AboutActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ModdedpeAboutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setActionBarButtonCloseRight()
         binding.aboutViewGithubButton.setOnClickListener { openUri(URI_GITHUB) }
         binding.aboutViewNmodApiButton.setOnClickListener { openUri(URI_NMOD_API) }
         binding.aboutTranslatorsButton.setOnClickListener {
