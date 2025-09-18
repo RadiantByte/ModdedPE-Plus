@@ -18,6 +18,7 @@ package com.mcal.mcpelauncher.utils
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import androidx.core.graphics.createBitmap
 
 /**
  * @author Тимашков Иван
@@ -26,7 +27,7 @@ import android.graphics.Canvas
 object BitmapRepeater {
     private fun repeatW(width: Int, src: Bitmap): Bitmap {
         val count = (width + src.width - 1) / src.width + 1
-        val bitmap = Bitmap.createBitmap(width, src.height, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(width, src.height)
         val canvas = Canvas(bitmap)
         for (idx in 0 until count) {
             if (idx + 1 == count) canvas.drawBitmap(
@@ -41,7 +42,7 @@ object BitmapRepeater {
 
     private fun repeatH(height: Int, src: Bitmap): Bitmap {
         val count = (height + src.height - 1) / src.height + 1
-        val bitmap = Bitmap.createBitmap(src.width, height, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(src.width, height)
         val canvas = Canvas(bitmap)
         for (idx in 0 until count) {
             if (idx + 1 == count) canvas.drawBitmap(

@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import com.mcal.mcpelauncher.utils.BitmapRepeater.repeat
+import androidx.core.graphics.createBitmap
 
 /**
  * @author Тимашков Иван
@@ -49,7 +50,7 @@ class RepeatableImageView : AppCompatImageView {
     }
 
     private fun drawableToBitmap(drawable: Drawable): Bitmap {
-        val bitmap = Bitmap.createBitmap(
+        val bitmap = createBitmap(
             drawable.intrinsicWidth,
             drawable.intrinsicHeight,
             if (drawable.opacity != PixelFormat.OPAQUE) Bitmap.Config.ARGB_8888 else Bitmap.Config.RGB_565

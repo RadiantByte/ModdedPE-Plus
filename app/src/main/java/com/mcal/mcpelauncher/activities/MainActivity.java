@@ -22,7 +22,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.view.MenuItem;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -96,17 +95,6 @@ public class MainActivity extends BaseActivity {
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q && !Environment.isExternalStorageManager()) {
             Dialogs.showScopedStorageDialog(this);
-        }
-    }
-
-    private void switchViewPager(@NotNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.item_main_page) {
-            mMainViewPager.setCurrentItem(0, false);
-        } else if (id == R.id.item_manage_nmods) {
-            mMainViewPager.setCurrentItem(1, false);
-        } else if (id == R.id.item_launcher_settings) {
-            mMainViewPager.setCurrentItem(2, false);
         }
     }
 

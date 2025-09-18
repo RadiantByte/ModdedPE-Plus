@@ -17,14 +17,12 @@
 package com.mcal.mcpelauncher.view
 
 import android.content.Context
-import android.graphics.Typeface
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
-import com.mcal.mcpelauncher.R
 
 /**
  * @author Тимашков Иван
@@ -57,10 +55,6 @@ class CenteredToolBar : Toolbar {
 
     override fun setTitle(title: CharSequence) {
         getCenteredTitleTextView().text = title
-    }
-
-    fun setTypeface(font: Typeface?) {
-        getCenteredTitleTextView().typeface = font
     }
 
     private fun getCenteredTitleTextView(): AppCompatTextView {
