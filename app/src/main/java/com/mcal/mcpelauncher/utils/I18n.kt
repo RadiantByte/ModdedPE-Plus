@@ -17,6 +17,7 @@
 package com.mcal.mcpelauncher.utils
 
 import android.app.Activity
+import android.os.Build
 import com.mcal.mcpelauncher.data.Preferences
 import java.util.*
 
@@ -27,26 +28,38 @@ import java.util.*
 object I18n {
     @JvmStatic
     fun setLanguage(context: Activity) {
-        val defaultLocale = context.resources.configuration.locale
-        val config = context.resources.configuration
-        when (Preferences.languageType) {
-            0 -> config.setLocale(Locale.getDefault())
-            1 -> config.setLocale(Locale.ENGLISH)
-            2 -> config.setLocale(Locale.SIMPLIFIED_CHINESE)
-            3 -> config.setLocale(Locale.JAPANESE)
-            4 -> config.setLocale(Locale("ru", "RU"))
-            5 -> config.setLocale(Locale.CHINESE)
-            6 -> config.setLocale(Locale("tr")) // Турецкий язык
-            7 -> config.setLocale(Locale("pt")) // Португальский
-            8 -> config.setLocale(Locale.FRENCH)
-            9 -> config.setLocale(Locale("th")) // Тайский
-            10 -> config.setLocale(Locale("kk")) // Казахский
-            11 -> config.setLocale(Locale("uk")) // Украинский
-            else -> config.setLocale(Locale.getDefault())
+        val defaultLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            context.resources.configuration.locales[0]
+        } else {
+            @Suppress("DEPRECATION")
+            context.resources.configuration.locale
         }
-        if (defaultLocale != config.locale) context.resources.updateConfiguration(
-            config,
-            context.resources.displayMetrics
-        )
+        val config = context.resources.configuration
+        val newLocale = when (Preferences.languageType) {
+            0 -> Locale.getDefault()
+            1 -> Locale.ENGLISH
+            2 -> Locale.SIMPLIFIED_CHINESE
+            3 -> Locale.JAPANESE
+            4 -> Locale.Builder().setLanguage("ru").setRegion("RU").build()
+            5 -> Locale.CHINESE
+            6 -> Locale.Builder().setLanguage("tr").build() // Турецкий язык
+            7 -> Locale.Builder().setLanguage("pt").build() // Португальский
+            8 -> Locale.FRENCH
+            9 -> Locale.Builder().setLanguage("th").build() // Тайский
+            10 -> Locale.Builder().setLanguage("kk").build() // Казахский
+            11 -> Locale.Builder().setLanguage("uk").build() // Украинский
+            else -> Locale.getDefault()
+        }
+        
+        config.setLocale(newLocale)
+        
+        if (defaultLocale != newLocale) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                context.createConfigurationContext(config)
+            } else {
+                @Suppress("DEPRECATION")
+                context.resources.updateConfiguration(config, context.resources.displayMetrics)
+            }
+        }
     }
 }

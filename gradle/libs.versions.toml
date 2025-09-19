@@ -10,6 +10,7 @@ android-targetSdk = "36"
 
 activity-ktx = "1.11.0"
 fragment-ktx = "1.8.9"
+materialIconsExtended = "1.7.8"
 playServicesAds = "24.6.0"
 wortise-sdk = "1.5.1"
 annotation = "1.9.1"
@@ -54,6 +55,7 @@ xerial = "3.50.3.0"
 
 [libraries]
 androidx-games-activity = { module = "androidx.games:games-activity", version.ref = "gamesActivity" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 wortise-sdk = { module = "com.wortise:android-sdk", version.ref = "wortise-sdk" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity-ktx" }

@@ -16,49 +16,12 @@
  */
 package com.mcal.mcpelauncher.ui
 
-import android.content.DialogInterface
-import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
-import com.mcal.mcpelauncher.R
-import com.mcal.mcpelauncher.activities.BaseActivity
-import com.mcal.mcpelauncher.databinding.ModdedpeAboutBinding
-import com.mcal.mcpelauncher.utils.I18n.setLanguage
+
+import androidx.activity.ComponentActivity
+
 
 /**
  * @author Тимашков Иван
  * @author https://github.com/TimScriptov
  */
-class AboutActivity : BaseActivity() {
-    private lateinit var binding: ModdedpeAboutBinding
-
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ModdedpeAboutBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.aboutViewGithubButton.setOnClickListener { openUri(URI_GITHUB) }
-        binding.aboutViewNmodApiButton.setOnClickListener { openUri(URI_NMOD_API) }
-        binding.aboutTranslatorsButton.setOnClickListener {
-            AlertDialog.Builder(this)
-                .setTitle(R.string.about_translators)
-                .setMessage(R.string.about_translators_message)
-                .setPositiveButton(android.R.string.ok) { p11: DialogInterface, _: Int -> p11.dismiss() }
-                .show()
-        }
-        setLanguage(this)
-    }
-
-    private fun openUri(uri: String) {
-        val intent = Intent()
-        intent.action = Intent.ACTION_VIEW
-        val contentUrl = Uri.parse(uri)
-        intent.data = contentUrl
-        startActivity(intent)
-    }
-
-    companion object {
-        private const val URI_GITHUB = "https://github.com/TimScriptov/ModdedPE.git"
-        private const val URI_NMOD_API = "http://github.com/TimScriptov/NModAPI.git"
-    }
-}
+class AboutActivity : ComponentActivity()

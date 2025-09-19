@@ -19,9 +19,6 @@ package com.mcal.mcpelauncher.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.RelativeLayout
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.ViewCompat
-import com.mcal.mcpelauncher.R
 
 /**
  * @author Тимашков Иван
@@ -36,18 +33,7 @@ class ActionBar : RelativeLayout {
         defStyleAttr
     )
 
-    constructor(
-        context: Context,
-        attrs: AttributeSet,
-        defStyleAttr: Int,
-        defStyleRes: Int
-    ) : super(context, attrs, defStyleAttr, defStyleRes)
-
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        ViewCompat.setBackground(
-            this,
-            ResourcesCompat.getDrawable(resources, R.drawable.mcd_header_bg, null)
-        )
     }
 }
