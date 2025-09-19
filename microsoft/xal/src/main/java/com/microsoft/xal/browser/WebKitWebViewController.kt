@@ -37,6 +37,7 @@ class WebKitWebViewController : AppCompatActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val extras = intent.extras
         if (extras == null) {
             Log.e(TAG, "onCreate() Called with no extras.")
@@ -96,18 +97,62 @@ class WebKitWebViewController : AppCompatActivity() {
             hashMap[requestHeaderKeys[i]] = requestHeaderValues[i]
         }
 
-        val webView = WebView(this)
-        setContentView(webView)
-        webView.settings.javaScriptEnabled = true
-        webView.settings.mixedContentMode = MIXED_CONTENT_COMPATIBILITY_MODE
-        webView.webChromeClient = object : WebChromeClient() {
-            override fun onProgressChanged(webView: WebView, i: Int) {
-                setProgress(i * 100)
+        try {
+            WebView.setWebContentsDebuggingEnabled(false)
+
+            val webView = WebView(this@WebKitWebViewController)
+
+            setContentView(android.widget.ProgressBar(this))
+
+            val settings = webView.settings
+            settings.javaScriptEnabled = true
+            settings.mixedContentMode = MIXED_CONTENT_COMPATIBILITY_MODE
+            settings.domStorageEnabled = true
+            settings.databaseEnabled = true
+            settings.setSupportZoom(false)
+            settings.builtInZoomControls = false
+            settings.displayZoomControls = false
+            settings.loadWithOverviewMode = true
+            settings.useWideViewPort = true
+            settings.cacheMode = WebSettings.LOAD_NO_CACHE
+            settings.allowFileAccess = false
+            settings.allowContentAccess = false
+
+            webView.setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
+
+            webView.webChromeClient = object : WebChromeClient() {
+                override fun onProgressChanged(webView: WebView, i: Int) {
+                    setProgress(i * 100)
+                    if (i == 100) {
+                        runOnUiThread {
+                            try {
+                                setContentView(webView)
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Failed to set WebView content", e)
+                            }
+                        }
+                    }
+                }
             }
+
+            webView.webViewClient = XalWebViewClient(this@WebKitWebViewController, endUrl)
+
+            android.os.Handler(mainLooper).postDelayed({
+                try {
+                    webView.loadUrl(url, hashMap)
+                    mWebView = webView
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to load URL in WebView", e)
+                    setResult(RESULT_FAILED)
+                    finish()
+                }
+            }, 200)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create WebView", e)
+            setResult(RESULT_FAILED)
+            finish()
         }
-        webView.webViewClient = XalWebViewClient(this@WebKitWebViewController, endUrl)
-        webView.loadUrl(url)
-        mWebView = webView
     }
 
     private fun deleteCookies(domain: String, useHttps: Boolean) {
@@ -146,6 +191,42 @@ class WebKitWebViewController : AppCompatActivity() {
             }
         }
         cookieManager.flush()
+    }
+
+    override fun onDestroy() {
+        try {
+            mWebView?.let { webView ->
+                webView.clearHistory()
+                webView.clearCache(true)
+                webView.loadUrl("about:blank")
+                webView.onPause()
+                webView.removeAllViews()
+                webView.destroyDrawingCache()
+                webView.destroy()
+            }
+            mWebView = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Error destroying WebView", e)
+        }
+        super.onDestroy()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        try {
+            mWebView?.onPause()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error pausing WebView", e)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        try {
+            mWebView?.onResume()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error resuming WebView", e)
+        }
     }
 
     companion object {

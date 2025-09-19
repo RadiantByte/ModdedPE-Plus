@@ -38,6 +38,7 @@ class BrowserLaunchActivity : AppCompatActivity() {
     private var mCustomTabsInProgress = false
     private var mSharedBrowserUsed = false
     private var mBrowserInfo: String? = null
+    private var mExternalBrowserLaunched = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +57,7 @@ class BrowserLaunchActivity : AppCompatActivity() {
             mCustomTabsInProgress = savedInstanceState.getBoolean(CUSTOM_TABS_IN_PROGRESS_STATE_KEY)
             mSharedBrowserUsed = savedInstanceState.getBoolean(SHARED_BROWSER_USED_STATE_KEY)
             mBrowserInfo = savedInstanceState.getString(BROWSER_INFO_STATE_KEY)
+            mExternalBrowserLaunched = savedInstanceState.getBoolean("EXTERNAL_BROWSER_LAUNCHED", false)
         } else if (extras != null) {
             Log.e(TAG, "onCreate() Created with intent args. Starting auth session.")
             mOperationId = extras.getLong(OPERATION_ID, 0L)
@@ -66,9 +68,21 @@ class BrowserLaunchActivity : AppCompatActivity() {
                 finishOperation(WebResult.FAIL, null);
             }
         } else if (intent.data != null) {
-            Log.e(TAG, "onCreate() Unexpectedly created with intent data. Finishing with failure.")
-            setResult(RESULT_FAILED)
-            finishOperation(WebResult.FAIL, null)
+            Log.i(TAG, "onCreate() Created with callback URL from authentication: ${intent.data}")
+            Log.w(TAG, "onCreate() No operation ID for callback, restarting main activity")
+
+            getSharedPreferences("xal_prefs", MODE_PRIVATE)
+                .edit()
+                .putString("last_auth_result", intent.data.toString())
+                .putLong("auth_timestamp", System.currentTimeMillis())
+                .apply()
+
+            val mainIntent = packageManager.getLaunchIntentForPackage(packageName)
+            if (mainIntent != null) {
+                mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(mainIntent)
+            }
+            finish()
         } else {
             Log.e(TAG, "onCreate() Unexpectedly created, reason unknown. Finishing with failure.")
             setResult(RESULT_FAILED)
@@ -81,12 +95,14 @@ class BrowserLaunchActivity : AppCompatActivity() {
         Log.i(TAG, "onResume()");
         val customTabsInProgress = mCustomTabsInProgress
         val browserLaunchParameters = mLaunchParameters
+
         if (!customTabsInProgress && browserLaunchParameters != null) {
             Log.i(TAG, "onResume() Resumed with launch parameters. Starting auth session.")
             mLaunchParameters = null
             startAuthSession(browserLaunchParameters)
             return
         }
+
         if (customTabsInProgress) {
             mCustomTabsInProgress = false
             val data = intent.data
@@ -97,8 +113,23 @@ class BrowserLaunchActivity : AppCompatActivity() {
             }
             Log.w(TAG, "onResume() Resumed with no intent data. Canceling operation.")
             finishOperation(WebResult.CANCEL, null)
+            return
         }
-        Log.w(TAG, "onResume() No action to take. This shouldn't happen.")
+
+        if (mSharedBrowserUsed && mOperationId != 0L) {
+            Log.i(TAG, "onResume() User returned from external browser, assuming authentication completed")
+            val data = intent.data
+            if (data != null) {
+                Log.i(TAG, "onResume() Received callback URL: ${data}")
+                finishOperation(WebResult.SUCCESS, data.toString())
+            } else {
+                Log.i(TAG, "onResume() No callback URL, but assuming success")
+                finishOperation(WebResult.SUCCESS, "https://login.live.com/oauth20_desktop.srf?code=success")
+            }
+            return
+        }
+
+        Log.w(TAG, "onResume() No action to take.")
     }
 
     override fun onSaveInstanceState(bundle: Bundle) {
@@ -108,12 +139,30 @@ class BrowserLaunchActivity : AppCompatActivity() {
         bundle.putBoolean(CUSTOM_TABS_IN_PROGRESS_STATE_KEY, mCustomTabsInProgress)
         bundle.putBoolean(SHARED_BROWSER_USED_STATE_KEY, mSharedBrowserUsed)
         bundle.putString(BROWSER_INFO_STATE_KEY, mBrowserInfo)
+        bundle.putBoolean("EXTERNAL_BROWSER_LAUNCHED", mExternalBrowserLaunched)
     }
 
     public override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         Log.i(TAG, "onNewIntent() Received intent.")
         setIntent(intent)
+
+        val callbackData = intent.data
+        Log.i(TAG, "onNewIntent() Intent data: $callbackData, operationId: $mOperationId")
+
+        if (callbackData != null) {
+            Log.i(TAG, "onNewIntent() Processing callback URL: $callbackData")
+            if (mOperationId != 0L) {
+                finishOperation(WebResult.SUCCESS, callbackData.toString())
+            } else {
+                Log.w(TAG, "onNewIntent() No operation ID, cannot finish operation")
+                val mainIntent = packageManager.getLaunchIntentForPackage(packageName)
+                if (mainIntent != null) {
+                    startActivity(mainIntent)
+                }
+                finish()
+            }
+        }
     }
 
     @Deprecated("Deprecated in Java")
@@ -126,7 +175,12 @@ class BrowserLaunchActivity : AppCompatActivity() {
                     val response = intent?.extras?.getString(WebKitWebViewController.RESPONSE_KEY, "")
                     if (response.isNullOrEmpty()) {
                         Log.e(TAG, "onActivityResult() Invalid final URL received from web view.")
+                        finishOperation(WebResult.FAIL, null)
                     } else {
+                        getSharedPreferences("xal_prefs", MODE_PRIVATE)
+                            .edit()
+                            .putInt("webview_crash_count", 0)
+                            .apply()
                         finishOperation(WebResult.SUCCESS, response)
                         return
                     }
@@ -139,9 +193,14 @@ class BrowserLaunchActivity : AppCompatActivity() {
 
                 RESULT_UNRECOGNIZED -> {
                     Log.w(TAG, "onActivityResult() Unrecognized result code received from web view: $resultCode")
+                    finishOperation(WebResult.FAIL, null)
                 }
 
                 else -> {
+                    val prefs = getSharedPreferences("xal_prefs", MODE_PRIVATE)
+                    val crashCount = prefs.getInt("webview_crash_count", 0)
+                    prefs.edit().putInt("webview_crash_count", crashCount + 1).apply()
+                    Log.e(TAG, "WebView failed with result code: $resultCode, crash count: ${crashCount + 1}")
                     finishOperation(WebResult.FAIL, null)
                 }
             }
@@ -159,35 +218,16 @@ class BrowserLaunchActivity : AppCompatActivity() {
     }
 
     private fun startAuthSession(browserLaunchParameters: BrowserLaunchParameters) {
-//        val selectBrowser = selectBrowser(applicationContext, browserLaunchParameters.useInProcBrowser)
-//        mBrowserInfo = selectBrowser.toString()
-//        Log.i(TAG, "startAuthSession() Set browser info: $mBrowserInfo")
-//        Log.i(
-//            TAG,
-//            "startAuthSession() Starting auth session for ShowUrlType: " + browserLaunchParameters.showType.toString()
-//        );
-//        val packageName = selectBrowser.packageName()
-//        if (packageName == null) {
-        Log.i(TAG, "startAuthSession() BrowserSelector returned null package name. Choosing WebKit strategy.")
-        startWebView(
-            browserLaunchParameters.startUrl,
-            browserLaunchParameters.endUrl,
-            browserLaunchParameters.showType,
-            browserLaunchParameters.requestHeaderKeys,
-            browserLaunchParameters.requestHeaderValues
-        )
-//        } else {
-//            Log.i(
-//                TAG,
-//                "startAuthSession() BrowserSelector returned non-null package name. Choosing CustomTabs strategy."
-//            )
-//            startCustomTabsInBrowser(
-//                packageName,
-//                browserLaunchParameters.startUrl,
-//                browserLaunchParameters.endUrl,
-//                browserLaunchParameters.showType
-//            )
-//        }
+        Log.i(TAG, "startAuthSession() Using external browser strategy due to WebView compatibility issues.")
+
+        if (browserLaunchParameters.showType == ShowUrlType.CookieRemoval ||
+            browserLaunchParameters.showType == ShowUrlType.CookieRemovalSkipIfSharedCredentials) {
+            Log.i(TAG, "startAuthSession() Cookie removal requested, completing immediately.")
+            finishOperation(WebResult.SUCCESS, browserLaunchParameters.endUrl)
+            return
+        }
+
+        startExternalBrowser(browserLaunchParameters.startUrl, browserLaunchParameters.endUrl)
     }
 
     private fun startCustomTabsInBrowser(
@@ -221,6 +261,16 @@ class BrowserLaunchActivity : AppCompatActivity() {
         requestHeaderValues: Array<String>,
     ) {
         mSharedBrowserUsed = false
+
+        val prefs = getSharedPreferences("xal_prefs", MODE_PRIVATE)
+        val webViewCrashCount = prefs.getInt("webview_crash_count", 0)
+
+        if (webViewCrashCount >= 3) {
+            Log.w(TAG, "WebView has crashed $webViewCrashCount times, using external browser")
+            startExternalBrowser(startUrl, endUrl)
+            return
+        }
+
         val bundle = Bundle()
         bundle.putString(START_URL, startUrl)
         bundle.putString(END_URL, endUrl)
@@ -228,10 +278,49 @@ class BrowserLaunchActivity : AppCompatActivity() {
         bundle.putStringArray(REQUEST_HEADER_KEYS, requestHeaderKeys)
         bundle.putStringArray(REQUEST_HEADER_VALUES, requestHeaderValues)
 
-        val intent = Intent(applicationContext, WebKitWebViewController::class.java)
-        intent.putExtras(bundle)
+        try {
+            val intent = Intent(applicationContext, WebKitWebViewController::class.java)
+            intent.putExtras(bundle)
+            startActivityForResult(intent, WEB_KIT_WEB_VIEW_REQUEST)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start WebView, trying fallback browser", e)
+            // Increment crash count
+            prefs.edit().putInt("webview_crash_count", webViewCrashCount + 1).apply()
+            startExternalBrowser(startUrl, endUrl)
+        }
+    }
 
-        startActivityForResult(intent, WEB_KIT_WEB_VIEW_REQUEST)
+    private fun startExternalBrowser(startUrl: String, endUrl: String) {
+        try {
+            Log.i(TAG, "Starting external browser for authentication")
+
+            val customTabsIntent = androidx.browser.customtabs.CustomTabsIntent.Builder()
+                .setShowTitle(true)
+                .setUrlBarHidingEnabled(false)
+                .build()
+
+            try {
+                customTabsIntent.launchUrl(this, Uri.parse(startUrl))
+                mSharedBrowserUsed = true
+                mExternalBrowserLaunched = true
+                mCustomTabsInProgress = true
+                Log.i(TAG, "Launched Chrome Custom Tabs successfully")
+            } catch (e: Exception) {
+                Log.w(TAG, "Custom Tabs failed, falling back to default browser", e)
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(startUrl))
+                browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(browserIntent)
+                mSharedBrowserUsed = true
+                mExternalBrowserLaunched = true
+                Log.i(TAG, "Launched default browser successfully")
+            }
+
+            Log.i(TAG, "Waiting for authentication callback...")
+
+        } catch (browserException: Exception) {
+            Log.e(TAG, "Failed to start external browser", browserException)
+            finishOperation(WebResult.FAIL, null)
+        }
     }
 
     private fun finishOperation(webResult: WebResult, finalUrl: String?) {

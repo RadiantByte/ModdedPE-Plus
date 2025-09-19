@@ -38,10 +38,23 @@ class IntentHandler : AppCompatActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.e(TAG, "onCreate() New intent received.")
-        val intent = Intent(this, BrowserLaunchActivity::class.java)
-        intent.setData(intent.data)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        startActivity(intent)
+
+        val callbackData = intent.data
+        Log.i(TAG, "Received callback URL: $callbackData")
+
+        if (callbackData != null) {
+            val browserIntent = Intent(this, BrowserLaunchActivity::class.java)
+            browserIntent.data = callbackData
+            browserIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(browserIntent)
+        } else {
+            Log.w(TAG, "No callback data received")
+            val mainIntent = packageManager.getLaunchIntentForPackage(packageName)
+            if (mainIntent != null) {
+                startActivity(mainIntent)
+            }
+        }
+
         finish()
     }
 }

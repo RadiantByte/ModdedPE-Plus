@@ -25,16 +25,21 @@ public class ModdedPEApplication extends Application {
     public void onCreate() {
         super.onCreate();
         context = this;
-        mPESdk = new PESdk(this);
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        try {
+            mPESdk = new PESdk(this);
+            preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (!preferences.contains("night_mode")) {
-            preferences.edit().putBoolean("night_mode", true).apply();
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+            if (!preferences.contains("night_mode")) {
+                preferences.edit().putBoolean("night_mode", true).apply();
+            }
+
+            DynamicColors.applyToActivitiesIfAvailable(this);
+        } catch (Exception e) {
+            android.util.Log.e("ModdedPEApplication", "Error during initialization", e);
         }
-
-        DynamicColors.applyToActivitiesIfAvailable(this);
     }
 
     public static Context getContext() {
@@ -45,6 +50,16 @@ public class ModdedPEApplication extends Application {
     }
 
     public AssetManager getAssets() {
-        return mPESdk.getMinecraftInfo().getAssets();
+        try {
+            if (mPESdk != null && mPESdk.getMinecraftInfo() != null) {
+                AssetManager minecraftAssets = mPESdk.getMinecraftInfo().getAssets();
+                if (minecraftAssets != null) {
+                    return minecraftAssets;
+                }
+            }
+        } catch (Exception e) {
+            android.util.Log.w("ModdedPEApplication", "Failed to get Minecraft assets, using default", e);
+        }
+        return super.getAssets();
     }
 }
