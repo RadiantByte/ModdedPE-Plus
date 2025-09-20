@@ -114,51 +114,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="com.mcal.mcpelauncher.ui.ImportNModActivity"
-            android:exported="true"
-            android:icon="@drawable/mcd_add_pack"
-            android:label="@string/import_nmod_title"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@style/AppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data
-                    android:host="*"
-                    android:mimeType="*/*"
-                    android:pathPattern=".*\.mcnmod"
-                    android:scheme="file"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data
-                    android:host="*"
-                    android:mimeType="*/*"
-                    android:pathPattern=".*\.zip"
-                    android:scheme="file"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data
-                    android:host="*"
-                    android:mimeType="*/*"
-                    android:pathPattern=".*\.apk"
-                    android:scheme="file"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data
-                    android:host="*"
-                    android:mimeType="*/*"
-                    android:pathPattern=".*\.nmod"
-                    android:scheme="file"/>
-            </intent-filter>
-        </activity>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.mcal.mcpelauncher.fileprovider"

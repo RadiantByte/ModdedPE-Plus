@@ -16,20 +16,10 @@
  */
 package com.mcal.mcpelauncher.activities;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
-
 import com.mcal.mcpelauncher.ModdedPEApplication;
-import com.mcal.mcpelauncher.R;
-import com.mcal.mcpelauncher.utils.BitmapRepeater;
 import com.mcal.mcpelauncher.utils.I18n;
 import com.mcal.pesdk.PESdk;
 
@@ -66,8 +56,5 @@ public class BaseActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mcd_bg);
-        bitmap = BitmapRepeater.repeat(getWindowManager().getDefaultDisplay().getWidth(), getWindowManager().getDefaultDisplay().getHeight(), bitmap);
-        getWindow().getDecorView().setBackground(new BitmapDrawable(bitmap));
     }
 }
