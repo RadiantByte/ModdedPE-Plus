@@ -29,7 +29,7 @@ import java.io.File
 fun FilePickerPage(
     title: String = "Select File",
     initialPath: String = "/storage/emulated/0",
-    fileExtensions: List<String> = listOf(".nmod", ".zip", ".apk"),
+    fileExtensions: List<String> = listOf(".nmod", ".zip", ".apk", ".so"),
     onFileSelected: (File) -> Unit,
     onCancel: () -> Unit
 ) {

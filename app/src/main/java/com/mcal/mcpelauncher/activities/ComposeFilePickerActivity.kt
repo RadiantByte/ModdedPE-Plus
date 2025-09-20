@@ -37,7 +37,7 @@ class ComposeFilePickerActivity : ComponentActivity() {
         val title = intent.getStringExtra(EXTRA_TITLE) ?: "Select File"
         val initialPath = intent.getStringExtra(EXTRA_INITIAL_PATH) ?: "/storage/emulated/0"
         val extensions = intent.getStringArrayExtra(EXTRA_EXTENSIONS)?.toList() 
-            ?: listOf(".nmod", ".zip", ".apk")
+            ?: listOf(".nmod", ".zip", ".apk", ".so")
         
         setContent {
             ModdedTheme {

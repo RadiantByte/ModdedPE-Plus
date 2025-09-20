@@ -59,13 +59,17 @@ fun NModsPage() {
     val soMods = remember { mutableStateListOf<SoMod>() }
     val soModManager = remember { SoModManager(context) }
 
-    LaunchedEffect(Unit) {
+    fun refreshLists() {
         enabled.clear()
         disabled.clear()
         soMods.clear()
         enabled.addAll(ModdedPEApplication.getMPESdk().getNModAPI().getImportedEnabledNMods())
         disabled.addAll(ModdedPEApplication.getMPESdk().getNModAPI().getImportedDisabledNMods())
         soMods.addAll(soModManager.mods)
+    }
+
+    LaunchedEffect(Unit) {
+        refreshLists()
     }
 
     Column(
@@ -75,7 +79,7 @@ fun NModsPage() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = context.getString(R.string.manage_nmod_title), 
+            text = context.getString(R.string.manage_nmod_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
@@ -95,9 +99,9 @@ fun NModsPage() {
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(text = "Add NMod")
             }
-            
+
             Button(
-                onClick = { showAddSoModDialog(context, soModManager) { soMods.clear(); soMods.addAll(soModManager.mods) } },
+                onClick = { showAddSoModDialog(context, soModManager) { refreshLists() } },
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(
@@ -106,6 +110,15 @@ fun NModsPage() {
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(text = "Add SoMod")
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            TextButton(onClick = { refreshLists() }) {
+                Text("Refresh")
             }
         }
 
@@ -231,8 +244,6 @@ fun NModsPage() {
                         soMod = soMod,
                         onToggle = {
                             soModManager.setEnabled(soMod.fileName, !soMod.isEnabled)
-                            soMods.clear()
-                            soMods.addAll(soModManager.mods)
                         },
                         onDelete = {
                             AlertDialog.Builder(context)
@@ -240,8 +251,6 @@ fun NModsPage() {
                                 .setMessage("Are you sure you want to delete ${soMod.fileName}?")
                                 .setPositiveButton(android.R.string.ok) { d, _ ->
                                     soModManager.removeSo(soMod.fileName)
-                                    soMods.clear()
-                                    soMods.addAll(soModManager.mods)
                                     d.dismiss()
                                 }
                                 .setNegativeButton(android.R.string.cancel, null)
@@ -299,7 +308,7 @@ private fun NModCard(
 ) {
     OutlinedCard(
         colors = CardDefaults.outlinedCardColors(
-            containerColor = if (isEnabled) 
+            containerColor = if (isEnabled)
                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
             else MaterialTheme.colorScheme.surface
         )
@@ -325,7 +334,7 @@ private fun NModCard(
                     )
                 }
             }
-            
+
             Row {
                 IconButton(onClick = onToggle) {
                     Icon(
@@ -334,7 +343,7 @@ private fun NModCard(
                         tint = if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 if (onDelete != null) {
                     IconButton(onClick = onDelete) {
                         Icon(
@@ -390,7 +399,7 @@ private fun SoModCard(
 ) {
     OutlinedCard(
         colors = CardDefaults.outlinedCardColors(
-            containerColor = if (soMod.isEnabled) 
+            containerColor = if (soMod.isEnabled)
                 MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
             else MaterialTheme.colorScheme.surface
         )
@@ -414,7 +423,7 @@ private fun SoModCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             Row {
                 IconButton(onClick = onToggle) {
                     Icon(
@@ -423,7 +432,7 @@ private fun SoModCard(
                         tint = if (soMod.isEnabled) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 IconButton(onClick = onDelete) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -442,9 +451,12 @@ private fun showAddSoModDialog(context: android.content.Context, soModManager: S
         .setMessage("Select a .so file to import as a SoMod")
         .setPositiveButton("Browse Files") { d, _ ->
             if (checkPermissions(context)) {
-                val intent = ComposeFilePickerActivity.createIntent(context, "Select SoMod (.so) File")
-                context.startActivity(intent)
+                showFilePathInputDialog(context, soModManager, onRefresh)
             }
+            d.dismiss()
+        }
+        .setNeutralButton("Import from Downloads") { d, _ ->
+            importFromCommonLocations(context, soModManager, onRefresh)
             d.dismiss()
         }
         .setNegativeButton("Cancel", null)
@@ -456,30 +468,38 @@ private fun importSoModFile(context: android.content.Context, filePath: String, 
         if (!sourceFile.exists()) {
             AlertDialog.Builder(context)
                 .setTitle("Error")
-                .setMessage("Selected file does not exist")
+                .setMessage("Selected file does not exist: $filePath")
                 .setPositiveButton("OK", null)
                 .show()
             return
         }
-        
+
         if (!sourceFile.name.endsWith(".so")) {
             AlertDialog.Builder(context)
                 .setTitle("Invalid File")
-                .setMessage("Please select a .so file")
+                .setMessage("Please select a .so file. Selected: ${sourceFile.name}")
                 .setPositiveButton("OK", null)
                 .show()
             return
         }
-        
+
         soModManager.importSoFile(sourceFile)
         onRefresh()
-        
+
+        val modsDir = soModManager.modsDir
+        val importedFiles = modsDir.listFiles { file -> file.name.endsWith(".so") }
+        val debugInfo = "SoMod imported successfully!\n\n" +
+                "File: ${sourceFile.name}\n" +
+                "Size: ${sourceFile.length()} bytes\n" +
+                "Mods directory: ${modsDir.absolutePath}\n" +
+                "Total .so files: ${importedFiles?.size ?: 0}"
+
         AlertDialog.Builder(context)
             .setTitle("Success")
-            .setMessage("SoMod imported successfully: ${sourceFile.name}")
+            .setMessage(debugInfo)
             .setPositiveButton("OK", null)
             .show()
-            
+
     } catch (e: Exception) {
         AlertDialog.Builder(context)
             .setTitle("Import Failed")
@@ -487,4 +507,62 @@ private fun importSoModFile(context: android.content.Context, filePath: String, 
             .setPositiveButton("OK", null)
             .show()
     }
+}
+
+private fun showFilePathInputDialog(context: android.content.Context, soModManager: SoModManager, onRefresh: () -> Unit) {
+    val input = android.widget.EditText(context)
+    input.hint = "/storage/emulated/0/Download/example.so"
+
+    AlertDialog.Builder(context)
+        .setTitle("Enter SoMod File Path")
+        .setMessage("Enter the full path to your .so file:")
+        .setView(input)
+        .setPositiveButton("Import") { _, _ ->
+            val filePath = input.text.toString().trim()
+            if (filePath.isNotEmpty()) {
+                importSoModFile(context, filePath, soModManager, onRefresh)
+            }
+        }
+        .setNegativeButton("Cancel", null)
+        .show()
+}
+
+private fun importFromCommonLocations(context: android.content.Context, soModManager: SoModManager, onRefresh: () -> Unit) {
+    val commonPaths = listOf(
+        "/storage/emulated/0/Download",
+        "/storage/emulated/0/Documents",
+        "/sdcard/Download",
+        "/sdcard/Documents"
+    )
+
+    val soFiles = mutableListOf<java.io.File>()
+
+    for (path in commonPaths) {
+        val dir = java.io.File(path)
+        if (dir.exists() && dir.isDirectory) {
+            dir.listFiles { file -> file.name.endsWith(".so") }?.let { files ->
+                soFiles.addAll(files)
+            }
+        }
+    }
+
+    if (soFiles.isEmpty()) {
+        AlertDialog.Builder(context)
+            .setTitle("No SoMods Found")
+            .setMessage("No .so files found in common locations (Downloads, Documents)")
+            .setPositiveButton("OK", null)
+            .show()
+        return
+    }
+
+    val fileNames = soFiles.map { "${it.name} (${it.parent})" }.toTypedArray()
+
+    AlertDialog.Builder(context)
+        .setTitle("Select SoMod to Import")
+        .setItems(fileNames) { _, which ->
+            val selectedFile = soFiles[which]
+            importSoModFile(context, selectedFile.absolutePath, soModManager, onRefresh)
+        }
+        .setNegativeButton("Cancel", null)
+        .show()
 }

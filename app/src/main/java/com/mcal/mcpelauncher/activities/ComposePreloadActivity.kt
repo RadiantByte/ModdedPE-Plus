@@ -20,6 +20,8 @@ import com.mcal.mcpelauncher.ui.theme.ModdedTheme
 import com.mcal.pesdk.PreloadException
 import com.mcal.pesdk.Preloader
 import com.mcal.pesdk.nmod.NMod
+import com.mcal.pesdk.somod.SoModManager
+import com.mcal.pesdk.somod.SoModNativeLoader
 import java.util.ArrayList
 import java.util.Random
 
@@ -164,6 +166,20 @@ class ComposePreloadActivity : ComponentActivity() {
 
                     override fun onFinishedLoadingAllNMods() {
                         writeNewText(getString(R.string.preloading_nmod_finish_loading))
+
+                        if (!Preferences.isSafeMode) {
+                            writeNewText("Loading SoMods...")
+                            try {
+                                val soModManager = SoModManager(this@ComposePreloadActivity)
+                                val cacheDir = this@ComposePreloadActivity.cacheDir
+                                SoModNativeLoader.loadEnabledSoMods(soModManager, cacheDir)
+                                writeNewText("SoMods loaded successfully")
+                            } catch (e: Exception) {
+                                writeNewText("SoMod loading failed: ${e.message}")
+                            }
+                        } else {
+                            writeNewText("SoMods skipped (Safe Mode)")
+                        }
                     }
 
                     override fun onNModLoaded(nmod: NMod) {
