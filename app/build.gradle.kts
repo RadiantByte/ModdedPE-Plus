@@ -105,6 +105,7 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.activity.compose)
     implementation(libs.material3)
+    implementation(libs.androidx.tv.material)
     debugImplementation(libs.ui.tooling)
     implementation(libs.ui.tooling.preview)
 

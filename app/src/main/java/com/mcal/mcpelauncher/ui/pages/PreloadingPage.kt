@@ -218,7 +218,7 @@ fun PreloadingPage(
 
                         Column {
                             Text(
-                                text = "Pro Tip",
+                                text = "Splashes & Tips",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer

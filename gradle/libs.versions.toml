@@ -52,6 +52,7 @@ compose-bom = "2025.09.00"
 
 exposed = "0.61.0"
 xerial = "3.50.3.0"
+tvMaterial = "1.0.1"
 
 [libraries]
 androidx-games-activity = { module = "androidx.games:games-activity", version.ref = "gamesActivity" }
@@ -126,6 +127,7 @@ voyager-screenModel = { module = "cafe.adriel.voyager:voyager-screenmodel", vers
 voyager-tabNavigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
+androidx-tv-material = { group = "androidx.tv", name = "tv-material", version.ref = "tvMaterial" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
