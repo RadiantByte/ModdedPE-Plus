@@ -29,6 +29,10 @@ import com.mcal.mcpelauncher.activities.ComposePreloadActivity
 import com.mcal.mcpelauncher.data.Preferences
 import com.mcal.pesdk.somod.SoModManager
 
+/**
+ * @author <a href="https://github.com/RadiantByte">RadiantByte</a>
+ */
+
 @SuppressLint("LocalContextResourcesRead")
 @Composable
 fun HomePage(onOpenAbout: () -> Unit = {}) {

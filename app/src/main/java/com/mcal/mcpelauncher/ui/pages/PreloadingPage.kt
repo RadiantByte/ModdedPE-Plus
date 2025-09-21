@@ -33,6 +33,10 @@ import com.mcal.mcpelauncher.R
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
+/**
+ * @author <a href="https://github.com/RadiantByte">RadiantByte</a>
+ */
+
 @Composable
 fun PreloadingPage(
     messages: List<String>,
