@@ -41,7 +41,7 @@ fun NModLoadFailPage(
     onNavigateToMain: () -> Unit,
     onNavigateToMinecraft: (Bundle) -> Unit
 ) {
-    val context = LocalContext.current
+    LocalContext.current
 
     Column(
         modifier = Modifier
