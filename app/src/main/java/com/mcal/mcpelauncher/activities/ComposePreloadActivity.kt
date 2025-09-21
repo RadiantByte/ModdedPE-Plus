@@ -2,16 +2,20 @@ package com.mcal.mcpelauncher.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.mcal.mcpelauncher.ModdedPEApplication
 import com.mcal.mcpelauncher.R
 import com.mcal.mcpelauncher.data.Preferences
@@ -32,14 +36,14 @@ import java.util.Random
 class ComposePreloadActivity : ComponentActivity() {
     private val messages = mutableStateListOf<String>()
     private val tipText = mutableStateOf("")
-    
+
     private companion object {
         const val MSG_START_MINECRAFT = 1
         const val MSG_WRITE_TEXT = 2
         const val MSG_ERROR = 3
         const val MSG_START_NMOD_LOADING_FAILED = 4
     }
-    
+
     @SuppressLint("HandlerLeak")
     private val preloadUIHandler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
@@ -72,12 +76,20 @@ class ComposePreloadActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    @SuppressLint("WrongConstant")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+        insetsController.hide(android.view.WindowInsets.Type.systemBars())
+        insetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
         val tipsArray = resources.getStringArray(R.array.preloading_tips_text)
         tipText.value = tipsArray[Random().nextInt(tipsArray.size)]
-        
+
         setContent {
             ModdedTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
@@ -88,17 +100,17 @@ class ComposePreloadActivity : ComponentActivity() {
                 }
             }
         }
-        
+
         PreloadThread().start()
     }
-    
+
     private fun writeNewText(text: String) {
         val message = Message()
         message.obj = text
         message.what = MSG_WRITE_TEXT
         preloadUIHandler.sendMessage(message)
     }
-    
+
     private inner class PreloadThread : Thread() {
         private val failedNMods = ArrayList<NMod>()
 

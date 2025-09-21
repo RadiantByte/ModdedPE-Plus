@@ -13,8 +13,8 @@ android {
         applicationId = "com.mcal.mcpelauncher"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 972112021
-        versionName = "1.21.120.21"
+        versionCode = 1
+        versionName = "1.0.0"
 
         ndk {
             abiFilters.addAll(
