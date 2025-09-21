@@ -7,6 +7,10 @@ import android.os.Environment
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -15,7 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mcal.mcpelauncher.ModdedPEApplication
 import com.mcal.mcpelauncher.R
 import com.mcal.mcpelauncher.activities.ComposeFilePickerActivity
@@ -51,215 +57,278 @@ fun NModsPage() {
         refreshLists()
     }
 
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = context.getString(R.string.manage_nmod_title),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Column(
+            modifier = Modifier.width(280.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Button(
-                onClick = { showAddDialog(context) },
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add NMod"
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "Add NMod")
-            }
-
-            Button(
-                onClick = { showAddSoModDialog(context, soModManager) { refreshLists() } },
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Build,
-                    contentDescription = "Add SoMod"
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "Add SoMod")
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(onClick = { refreshLists() }) {
-                Text("Refresh")
-            }
-        }
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            Text(
+                text = context.getString(R.string.manage_nmod_title),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
             )
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "${enabled.size}",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary
+                Button(
+                    onClick = { showAddDialog(context) },
+                    modifier = Modifier.fillMaxWidth().height(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add NMod",
+                        modifier = Modifier.size(16.dp)
                     )
-                    Text(text = "Enabled", style = MaterialTheme.typography.bodySmall)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(text = "Add NMod", fontSize = 14.sp)
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "${disabled.size}",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.secondary
+
+                Button(
+                    onClick = { showAddSoModDialog(context, soModManager) { refreshLists() } },
+                    modifier = Modifier.fillMaxWidth().height(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Build,
+                        contentDescription = "Add SoMod",
+                        modifier = Modifier.size(16.dp)
                     )
-                    Text(text = "Disabled", style = MaterialTheme.typography.bodySmall)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(text = "Add SoMod", fontSize = 14.sp)
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "${soMods.size}",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.tertiary
+
+                TextButton(
+                    onClick = { refreshLists() },
+                    modifier = Modifier.fillMaxWidth().height(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Refresh",
+                        modifier = Modifier.size(14.dp)
                     )
-                    Text(text = "SoMods", style = MaterialTheme.typography.bodySmall)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Refresh", fontSize = 13.sp)
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Text(
-                        text = "${enabled.size + disabled.size + soMods.size}",
-                        style = MaterialTheme.typography.headlineSmall
+                        text = "Statistics",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold
                     )
-                    Text(text = "Total", style = MaterialTheme.typography.bodySmall)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        StatItem(
+                            count = enabled.size,
+                            label = "Enabled",
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        StatItem(
+                            count = disabled.size,
+                            label = "Disabled",
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        StatItem(
+                            count = soMods.size,
+                            label = "SoMods",
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                        StatItem(
+                            count = enabled.size + disabled.size + soMods.size,
+                            label = "Total",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            if (enabled.isNotEmpty() || disabled.isNotEmpty() || soMods.isNotEmpty()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        Text(
+                            text = "Quick Actions",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        if (disabled.isNotEmpty()) {
+                            TextButton(
+                                onClick = {
+                                    disabled.forEach { nmod ->
+                                        ModdedPEApplication.getMPESdk().getNModAPI().setEnabled(nmod, true)
+                                    }
+                                    refreshLists()
+                                },
+                                modifier = Modifier.fillMaxWidth().height(32.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp)
+                            ) {
+                                Text("Enable All NMods", fontSize = 12.sp)
+                            }
+                        }
+
+                        if (enabled.isNotEmpty()) {
+                            TextButton(
+                                onClick = {
+                                    enabled.forEach { nmod ->
+                                        ModdedPEApplication.getMPESdk().getNModAPI().setEnabled(nmod, false)
+                                    }
+                                    refreshLists()
+                                },
+                                modifier = Modifier.fillMaxWidth().height(32.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp)
+                            ) {
+                                Text("Disable All NMods", fontSize = 12.sp)
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+        Column(
             modifier = Modifier.weight(1f)
         ) {
-            if (enabled.isNotEmpty()) {
-                item {
-                    Text(
-                        text = context.getString(R.string.nmod_enabled_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                items(enabled) { nmod ->
-                    NModCard(
-                        nmod = nmod,
-                        isEnabled = true,
-                        onToggle = {
-                            ModdedPEApplication.getMPESdk().getNModAPI().setEnabled(nmod, false)
-                            refreshLists()
-                        },
-                        onDelete = null
-                    )
-                }
-                item { Spacer(modifier = Modifier.height(8.dp)) }
-            }
-
-            if (disabled.isNotEmpty()) {
-                item {
-                    Text(
-                        text = context.getString(R.string.nmod_disabled_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
-                items(disabled) { nmod ->
-                    NModCard(
-                        nmod = nmod,
-                        isEnabled = false,
-                        onToggle = {
-                            ModdedPEApplication.getMPESdk().getNModAPI().setEnabled(nmod, true)
-                            refreshLists()
-                        },
-                        onDelete = {
-                            AlertDialog.Builder(context)
-                                .setTitle(R.string.nmod_delete_title)
-                                .setMessage(R.string.nmod_delete_message)
-                                .setPositiveButton(android.R.string.ok) { d, _ ->
-                                    ModdedPEApplication.getMPESdk().getNModAPI().removeImportedNMod(nmod)
-                                    refreshLists()
-                                    d.dismiss()
-                                }
-                                .setNegativeButton(android.R.string.cancel, null)
-                                .show()
-                        }
-                    )
-                }
-            }
-
-            if (soMods.isNotEmpty()) {
-                item {
-                    Text(
-                        text = "SoMods (.so files)",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                }
-                items(soMods) { soMod ->
-                    SoModCard(
-                        soMod = soMod,
-                        onToggle = {
-                            soModManager.setEnabled(soMod.fileName, !soMod.isEnabled)
-                            refreshLists()
-                        },
-                        onDelete = {
-                            handleSoModRemoval(soMod, soModManager, context, ::refreshLists)
-                        }
-                    )
-                }
-                item { Spacer(modifier = Modifier.height(8.dp)) }
-            }
-
             if (enabled.isEmpty() && disabled.isEmpty() && soMods.isEmpty()) {
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
+                Card(
+                    modifier = Modifier.fillMaxSize(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(32.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Build,
-                                contentDescription = "No NMods",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        Icon(
+                            imageVector = Icons.Default.Build,
+                            contentDescription = "No NMods",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "No Mods Installed",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Add NMods or SoMods to get started",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 280.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    if (enabled.isNotEmpty()) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            SectionHeader(
+                                title = context.getString(R.string.nmod_enabled_title),
+                                color = MaterialTheme.colorScheme.primary,
+                                count = enabled.size
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "No Mods installed",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                        items(enabled) { nmod ->
+                            CompactNModCard(
+                                nmod = nmod,
+                                isEnabled = true,
+                                onToggle = {
+                                    ModdedPEApplication.getMPESdk().getNModAPI().setEnabled(nmod, false)
+                                    refreshLists()
+                                },
+                                onDelete = null
                             )
-                            Text(
-                                text = "Add NMods or SoMods to get started",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    }
+
+                    if (disabled.isNotEmpty()) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            SectionHeader(
+                                title = context.getString(R.string.nmod_disabled_title),
+                                color = MaterialTheme.colorScheme.secondary,
+                                count = disabled.size
+                            )
+                        }
+                        items(disabled) { nmod ->
+                            CompactNModCard(
+                                nmod = nmod,
+                                isEnabled = false,
+                                onToggle = {
+                                    ModdedPEApplication.getMPESdk().getNModAPI().setEnabled(nmod, true)
+                                    refreshLists()
+                                },
+                                onDelete = {
+                                    AlertDialog.Builder(context)
+                                        .setTitle(R.string.nmod_delete_title)
+                                        .setMessage(R.string.nmod_delete_message)
+                                        .setPositiveButton(android.R.string.ok) { d, _ ->
+                                            ModdedPEApplication.getMPESdk().getNModAPI().removeImportedNMod(nmod)
+                                            refreshLists()
+                                            d.dismiss()
+                                        }
+                                        .setNegativeButton(android.R.string.cancel, null)
+                                        .show()
+                                }
+                            )
+                        }
+                    }
+
+                    if (soMods.isNotEmpty()) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            SectionHeader(
+                                title = "SoMods (.so files)",
+                                color = MaterialTheme.colorScheme.tertiary,
+                                count = soMods.size
+                            )
+                        }
+                        items(soMods) { soMod ->
+                            CompactSoModCard(
+                                soMod = soMod,
+                                onToggle = {
+                                    soModManager.setEnabled(soMod.fileName, !soMod.isEnabled)
+                                    refreshLists()
+                                },
+                                onDelete = {
+                                    handleSoModRemoval(soMod, soModManager, context, ::refreshLists)
+                                }
                             )
                         }
                     }
@@ -270,13 +339,69 @@ fun NModsPage() {
 }
 
 @Composable
-private fun NModCard(
+private fun StatItem(
+    count: Int,
+    label: String,
+    color: androidx.compose.ui.graphics.Color
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = "$count",
+            style = MaterialTheme.typography.titleMedium,
+            color = color,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            fontSize = 11.sp
+        )
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    title: String,
+    color: androidx.compose.ui.graphics.Color,
+    count: Int
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = color
+        )
+        Surface(
+            color = color.copy(alpha = 0.2f),
+            shape = MaterialTheme.shapes.small
+        ) {
+            Text(
+                text = "$count",
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                style = MaterialTheme.typography.labelSmall,
+                color = color,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+@Composable
+private fun CompactNModCard(
     nmod: NMod,
     isEnabled: Boolean,
     onToggle: () -> Unit,
     onDelete: (() -> Unit)?
 ) {
     OutlinedCard(
+        modifier = Modifier.height(90.dp),
         colors = CardDefaults.outlinedCardColors(
             containerColor = if (isEnabled)
                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
@@ -285,43 +410,144 @@ private fun NModCard(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .fillMaxSize()
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = nmod.name ?: nmod.packageName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 if (nmod.name != null && nmod.packageName != nmod.name) {
                     Text(
                         text = nmod.packageName,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
+                Text(
+                    text = if (isEnabled) "Enabled" else "Disabled",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                    fontWeight = FontWeight.Medium
+                )
             }
 
-            Row {
-                IconButton(onClick = onToggle) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                IconButton(
+                    onClick = onToggle,
+                    modifier = Modifier.size(32.dp)
+                ) {
                     Icon(
                         imageVector = if (isEnabled) Icons.Default.CheckCircle else Icons.Default.Clear,
                         contentDescription = if (isEnabled) "Disable" else "Enable",
-                        tint = if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
 
                 if (onDelete != null) {
-                    IconButton(onClick = onDelete) {
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier.size(32.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
-                            tint = MaterialTheme.colorScheme.error
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CompactSoModCard(
+    soMod: SoMod,
+    onToggle: () -> Unit,
+    onDelete: () -> Unit
+) {
+    OutlinedCard(
+        modifier = Modifier.height(90.dp),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = if (soMod.isEnabled)
+                MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
+            else MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = soMod.fileName.removeSuffix(".so"),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "SoMod • ${soMod.fileName}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = if (soMod.isEnabled) "Enabled" else "Disabled",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (soMod.isEnabled) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                IconButton(
+                    onClick = onToggle,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = if (soMod.isEnabled) Icons.Default.CheckCircle else Icons.Default.Clear,
+                        contentDescription = if (soMod.isEnabled) "Disable" else "Enable",
+                        tint = if (soMod.isEnabled) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             }
         }
@@ -359,62 +585,6 @@ private fun checkPermissions(context: Context): Boolean {
     return true
 }
 
-
-
-@Composable
-private fun SoModCard(
-    soMod: SoMod,
-    onToggle: () -> Unit,
-    onDelete: () -> Unit
-) {
-    OutlinedCard(
-        colors = CardDefaults.outlinedCardColors(
-            containerColor = if (soMod.isEnabled)
-                MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
-            else MaterialTheme.colorScheme.surface
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = soMod.fileName.removeSuffix(".so"),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "SoMod • ${soMod.fileName}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Row {
-                IconButton(onClick = onToggle) {
-                    Icon(
-                        imageVector = if (soMod.isEnabled) Icons.Default.CheckCircle else Icons.Default.Clear,
-                        contentDescription = if (soMod.isEnabled) "Disable" else "Enable",
-                        tint = if (soMod.isEnabled) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
-        }
-    }
-}
-
 private fun showAddSoModDialog(context: Context, soModManager: SoModManager, onRefresh: () -> Unit) {
     AlertDialog.Builder(context)
         .setTitle("Add SoMod")
@@ -432,6 +602,7 @@ private fun showAddSoModDialog(context: Context, soModManager: SoModManager, onR
         .setNegativeButton("Cancel", null)
         .show()
 }
+
 private fun importSoModFile(context: Context, filePath: String, soModManager: SoModManager, onRefresh: () -> Unit) {
     try {
         val sourceFile = File(filePath)
