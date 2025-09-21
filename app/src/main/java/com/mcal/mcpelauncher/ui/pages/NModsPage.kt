@@ -1,38 +1,16 @@
 package com.mcal.mcpelauncher.ui.pages
 
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Build
 import android.os.Environment
-import android.app.AlertDialog
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +24,7 @@ import com.mcal.mcpelauncher.ui.view.Dialogs
 import com.mcal.pesdk.nmod.NMod
 import com.mcal.pesdk.somod.SoMod
 import com.mcal.pesdk.somod.SoModManager
+import java.io.File
 
 /**
  * @author <a href="https://github.com/RadiantByte">RadiantByte</a>
@@ -187,8 +166,7 @@ fun NModsPage() {
                         isEnabled = true,
                         onToggle = {
                             ModdedPEApplication.getMPESdk().getNModAPI().setEnabled(nmod, false)
-                            enabled.remove(nmod)
-                            disabled.add(nmod)
+                            refreshLists()
                         },
                         onDelete = null
                     )
@@ -211,8 +189,7 @@ fun NModsPage() {
                         isEnabled = false,
                         onToggle = {
                             ModdedPEApplication.getMPESdk().getNModAPI().setEnabled(nmod, true)
-                            disabled.remove(nmod)
-                            enabled.add(nmod)
+                            refreshLists()
                         },
                         onDelete = {
                             AlertDialog.Builder(context)
@@ -220,7 +197,7 @@ fun NModsPage() {
                                 .setMessage(R.string.nmod_delete_message)
                                 .setPositiveButton(android.R.string.ok) { d, _ ->
                                     ModdedPEApplication.getMPESdk().getNModAPI().removeImportedNMod(nmod)
-                                    disabled.remove(nmod)
+                                    refreshLists()
                                     d.dismiss()
                                 }
                                 .setNegativeButton(android.R.string.cancel, null)
@@ -244,17 +221,10 @@ fun NModsPage() {
                         soMod = soMod,
                         onToggle = {
                             soModManager.setEnabled(soMod.fileName, !soMod.isEnabled)
+                            refreshLists()
                         },
                         onDelete = {
-                            AlertDialog.Builder(context)
-                                .setTitle("Delete SoMod")
-                                .setMessage("Are you sure you want to delete ${soMod.fileName}?")
-                                .setPositiveButton(android.R.string.ok) { d, _ ->
-                                    soModManager.removeSo(soMod.fileName)
-                                    d.dismiss()
-                                }
-                                .setNegativeButton(android.R.string.cancel, null)
-                                .show()
+                            handleSoModRemoval(soMod, soModManager, context, ::refreshLists)
                         }
                     )
                 }
@@ -358,7 +328,7 @@ private fun NModCard(
     }
 }
 
-private fun showAddDialog(context: android.content.Context) {
+private fun showAddDialog(context: Context) {
     AlertDialog.Builder(context)
         .setTitle(R.string.nmod_add_new_title)
         .setMessage(R.string.nmod_add_new_message)
@@ -377,7 +347,7 @@ private fun showAddDialog(context: android.content.Context) {
         .show()
 }
 
-private fun checkPermissions(context: android.content.Context): Boolean {
+private fun checkPermissions(context: Context): Boolean {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         return if (Environment.isExternalStorageManager()) {
             true
@@ -445,7 +415,7 @@ private fun SoModCard(
     }
 }
 
-private fun showAddSoModDialog(context: android.content.Context, soModManager: SoModManager, onRefresh: () -> Unit) {
+private fun showAddSoModDialog(context: Context, soModManager: SoModManager, onRefresh: () -> Unit) {
     AlertDialog.Builder(context)
         .setTitle("Add SoMod")
         .setMessage("Select a .so file to import as a SoMod")
@@ -462,9 +432,9 @@ private fun showAddSoModDialog(context: android.content.Context, soModManager: S
         .setNegativeButton("Cancel", null)
         .show()
 }
-private fun importSoModFile(context: android.content.Context, filePath: String, soModManager: SoModManager, onRefresh: () -> Unit) {
+private fun importSoModFile(context: Context, filePath: String, soModManager: SoModManager, onRefresh: () -> Unit) {
     try {
-        val sourceFile = java.io.File(filePath)
+        val sourceFile = File(filePath)
         if (!sourceFile.exists()) {
             AlertDialog.Builder(context)
                 .setTitle("Error")
@@ -509,7 +479,7 @@ private fun importSoModFile(context: android.content.Context, filePath: String, 
     }
 }
 
-private fun showFilePathInputDialog(context: android.content.Context, soModManager: SoModManager, onRefresh: () -> Unit) {
+private fun showFilePathInputDialog(context: Context, soModManager: SoModManager, onRefresh: () -> Unit) {
     val input = android.widget.EditText(context)
     input.hint = "/storage/emulated/0/Download/example.so"
 
@@ -527,7 +497,7 @@ private fun showFilePathInputDialog(context: android.content.Context, soModManag
         .show()
 }
 
-private fun importFromCommonLocations(context: android.content.Context, soModManager: SoModManager, onRefresh: () -> Unit) {
+private fun importFromCommonLocations(context: Context, soModManager: SoModManager, onRefresh: () -> Unit) {
     val commonPaths = listOf(
         "/storage/emulated/0/Download",
         "/storage/emulated/0/Documents",
@@ -535,10 +505,10 @@ private fun importFromCommonLocations(context: android.content.Context, soModMan
         "/sdcard/Documents"
     )
 
-    val soFiles = mutableListOf<java.io.File>()
+    val soFiles = mutableListOf<File>()
 
     for (path in commonPaths) {
-        val dir = java.io.File(path)
+        val dir = File(path)
         if (dir.exists() && dir.isDirectory) {
             dir.listFiles { file -> file.name.endsWith(".so") }?.let { files ->
                 soFiles.addAll(files)
@@ -564,5 +534,19 @@ private fun importFromCommonLocations(context: android.content.Context, soModMan
             importSoModFile(context, selectedFile.absolutePath, soModManager, onRefresh)
         }
         .setNegativeButton("Cancel", null)
+        .show()
+}
+
+private fun handleSoModRemoval(soMod: SoMod, soModManager: SoModManager, context: Context, refreshLists: () -> Unit) {
+    AlertDialog.Builder(context)
+        .setTitle("Delete SoMod")
+        .setMessage("Are you sure you want to delete ${soMod.fileName}?")
+        .setPositiveButton(android.R.string.ok) { d, _ ->
+            soModManager.removeSo(soMod.fileName)
+            soModManager.cleanCache(context)
+            refreshLists()
+            d.dismiss()
+        }
+        .setNegativeButton(android.R.string.cancel, null)
         .show()
 }

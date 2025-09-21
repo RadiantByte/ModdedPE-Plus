@@ -62,7 +62,10 @@ public class SoModManager {
             boolean found = false;
             if (files != null) {
                 for (File file : files) {
-                    if (file.getName().equals(key)) { found = true; break; }
+                    if (file.getName().equals(key)) {
+                        found = true;
+                        break;
+                    }
                 }
             }
             if (!found) toRemove.add(key);
@@ -111,11 +114,14 @@ public class SoModManager {
         if (fileName == null) return;
         File target = new File(modsDir, fileName);
         if (target.exists()) {
-            try { target.delete(); } catch (Throwable ignored) {}
+            try {
+                target.delete();
+            } catch (Throwable ignored) {}
         }
         enabledMap.remove(fileName);
         modOrder.remove(fileName);
         saveConfig();
+        cleanCache(context);
     }
 
     private void copyFile(File src, File dst) throws IOException {
@@ -152,7 +158,7 @@ public class SoModManager {
         }
         try {
             FileReader reader = new FileReader(configFile);
-            Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+            Type listType = new TypeToken<List<Map<String, Object>>>() {}.getType();
             List<Map<String, Object>> configList = gson.fromJson(reader, listType);
             reader.close();
             if (configList != null) {
@@ -170,7 +176,7 @@ public class SoModManager {
         }
         try {
             FileReader reader = new FileReader(configFile);
-            Type mapType = new TypeToken<Map<String, Boolean>>(){}.getType();
+            Type mapType = new TypeToken<Map<String, Boolean>>() {}.getType();
             Map<String, Boolean> map = gson.fromJson(reader, mapType);
             reader.close();
             if (map != null) {
@@ -195,6 +201,20 @@ public class SoModManager {
             writer.flush();
             writer.close();
         } catch (IOException ignored) {
+        }
+    }
+
+    public void cleanCache(Context context) {
+        File cacheDir = new File(context.getCacheDir(), "mods");
+        if (cacheDir.exists()) {
+            File[] files = cacheDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    try {
+                        file.delete();
+                    } catch (Throwable ignored) {}
+                }
+            }
         }
     }
 }
