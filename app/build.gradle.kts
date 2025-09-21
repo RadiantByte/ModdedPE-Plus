@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -12,8 +13,8 @@ android {
         applicationId = "com.mcal.mcpelauncher"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 972112021
-        versionName = "1.21.120.21"
+        versionCode = 1
+        versionName = "1.0.0"
 
         ndk {
             abiFilters.addAll(
@@ -65,8 +66,11 @@ android {
         checkReleaseBuilds = false
     }
     buildFeatures {
-        viewBinding = true
+        compose = true
+        viewBinding = false
         buildConfig = true
+    }
+    composeOptions {
     }
     lint {
         abortOnError = false
@@ -94,8 +98,17 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.viewpager2)
+    implementation(libs.androidx.material.icons.extended)
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.ui)
+    implementation(libs.ui.graphics)
+    implementation(libs.activity.compose)
+    implementation(libs.material3)
+    implementation(libs.androidx.tv.material)
+    debugImplementation(libs.ui.tooling)
+    implementation(libs.ui.tooling.preview)
+
     implementation(libs.androidx.annotation)
     implementation(libs.material)
 

@@ -18,14 +18,33 @@ public class SoModNativeLoader {
 
     private static native void nativeCallLeviEntry(String cacheDir);
 
+    private static void cleanModsCache(File cacheDir) {
+        File modsDir = new File(cacheDir, "mods");
+        if (modsDir.exists()) {
+            File[] files = modsDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    try {
+                        file.delete();
+                    } catch (Throwable ignored) {}
+                }
+            }
+        }
+    }
+
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     public static void loadEnabledSoMods(SoModManager modManager, File cacheDir) {
-        List<SoMod> mods = modManager.getMods();
+        cleanModsCache(cacheDir);
+
         File dir = new File(cacheDir, "mods");
         if (!dir.exists()) dir.mkdirs();
+
+        List<SoMod> mods = modManager.getMods();
         for (SoMod mod : mods) {
             if (!mod.isEnabled()) continue;
             File src = new File(modManager.getModsDir(), mod.getFileName());
+            if (!src.exists()) continue;
+
             File dst = new File(dir, mod.getFileName());
             try {
                 copyFile(src, dst);
@@ -35,6 +54,7 @@ public class SoModNativeLoader {
                 Log.e(TAG, "Can't load " + src.getName() + ": " + e.getMessage());
             }
         }
+
         try {
             System.loadLibrary("so-mod-loader");
             nativeCallLeviEntry(cacheDir.getAbsolutePath());

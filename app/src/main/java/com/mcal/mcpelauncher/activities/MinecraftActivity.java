@@ -30,6 +30,7 @@ import com.mcal.pesdk.PESdk;
 /**
  * @author <a href="https://github.com/timscriptov">timscriptov</a>
  */
+
 public class MinecraftActivity extends com.mojang.minecraftpe.MainActivity {
     protected PESdk getPESdk() {
         return ModdedPEApplication.mPESdk;
