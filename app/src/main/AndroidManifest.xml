@@ -47,9 +47,8 @@
         tools:ignore="HardcodedDebugMode"
         tools:targetApi="r">
 
-
         <activity
-            android:name="com.mcal.mcpelauncher.activities.ComposeSplashActivity"
+            android:name="com.mcal.mcpelauncher.activities.ComposeMainActivity"
             android:exported="true"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme">
@@ -58,12 +57,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="com.mcal.mcpelauncher.activities.ComposeMainActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@style/AppTheme"/>
 
         <activity
             android:name="com.mcal.mcpelauncher.activities.ComposePreloadActivity"
