@@ -171,25 +171,6 @@ fun HomePage(onOpenAbout: () -> Unit = {}) {
 									.setMessage(R.string.no_mcpe_found)
 									.setPositiveButton(android.R.string.cancel) { d, _ -> d.dismiss() }
 									.show()
-							} else if (!minecraftInfo.isSupportedMinecraftVersion(
-									context.resources.getStringArray(R.array.target_mcpe_versions)
-								)
-							) {
-								AlertDialog.Builder(context)
-									.setTitle(R.string.no_available_mcpe_version_found_title)
-									.setMessage(
-										context.getString(
-											R.string.no_available_mcpe_version_found,
-											minecraftInfo.minecraftVersionName,
-											context.getString(R.string.app_game) + " " + BuildConfig.VERSION_NAME
-										)
-									)
-									.setNegativeButton(android.R.string.cancel) { d, _ -> d.dismiss() }
-									.setPositiveButton(R.string.no_available_mcpe_version_continue) { d, _ ->
-										startMinecraft(context)
-										d.dismiss()
-									}
-									.show()
 							} else {
 								startMinecraft(context)
 							}
