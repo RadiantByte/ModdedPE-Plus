@@ -85,8 +85,6 @@ android {
 
 dependencies {
     implementation(project(":minecraft"))
-    implementation(project(":substrate"))
-    implementation(project(":xhook"))
     implementation(project(":httpclient"))
     implementation(project(":microsoft:xal"))
     implementation(project(":microsoft:xbox"))

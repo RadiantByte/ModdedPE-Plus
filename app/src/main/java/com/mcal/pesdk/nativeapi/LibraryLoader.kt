@@ -29,18 +29,6 @@ object LibraryLoader {
 
     @JvmStatic
     @SuppressLint("UnsafeDynamicallyLoadedCode")
-    fun loadSubstrate() {
-        System.loadLibrary("substrate")
-    }
-
-    @JvmStatic
-    @SuppressLint("UnsafeDynamicallyLoadedCode")
-    fun loadXHook() {
-        System.loadLibrary("xhook")
-    }
-
-    @JvmStatic
-    @SuppressLint("UnsafeDynamicallyLoadedCode")
     fun loadLauncher(mcLibsPath: String) {
         System.loadLibrary("launcher-core")
         nativeOnLauncherLoaded("$mcLibsPath/libminecraftpe.so")

@@ -51,6 +51,7 @@ ModdedPE can be integrated into your own projects as a library, providing NMod l
 ## TODO
 
 - [ ] Fix [mtbinloader2](https://github.com/mcbegamerxx954/mtbinloader2) loading compatibility and related mods
+- [ ] Add either Dobby or Gloss
 
 ## Fork Information
 

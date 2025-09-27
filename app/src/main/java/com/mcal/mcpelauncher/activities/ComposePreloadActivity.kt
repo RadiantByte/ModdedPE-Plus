@@ -140,20 +140,12 @@ class ComposePreloadActivity : ComponentActivity() {
                         writeNewText("--Loading libc++_shared.so")
                     }
 
-                    override fun onLoadSubstrateLib() {
-                        writeNewText(getString(R.string.preloading_loading_lib_substrate))
-                    }
-
                     override fun onLoadFModLib() {
                         writeNewText(getString(R.string.preloading_loading_lib_fmod))
                     }
 
                     override fun onLoadMediaDecoders() {
                         writeNewText(getString(R.string.preloading_loading_lib_media_decoders))
-                    }
-
-                    override fun onLoadXHookLib() {
-                        writeNewText(getString(R.string.preloading_loading_lib_xhook))
                     }
 
                     override fun onLoadMinecraftPELib() {

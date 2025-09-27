@@ -131,13 +131,6 @@ public class Preloader {
             LibraryLoader.loadLauncher(nativeLibDir);
 
             if (!safeMode) {
-                mPreloadListener.onLoadSubstrateLib();
-                Log.d("Preloader", "Loading substrate...");
-                LibraryLoader.loadSubstrate();
-
-                mPreloadListener.onLoadXHookLib();
-                Log.d("Preloader", "Loading xhook...");
-                LibraryLoader.loadXHook();
 
                 mPreloadListener.onLoadPESdkLib();
                 Log.d("Preloader", "Loading NMod API...");
@@ -332,14 +325,6 @@ public class Preloader {
 
         public void onLoadNativeLibs() {
             Log.e(TAG, "onLoadNativeLibs()");
-        }
-
-        public void onLoadSubstrateLib() {
-            Log.e(TAG, "onLoadSubstrateLib()");
-        }
-
-        public void onLoadXHookLib() {
-            Log.e(TAG, "onLoadXHookLib()");
         }
 
         public void onLoadGameLauncherLib() {
