@@ -42,7 +42,5 @@ include(":microsoft:xal")
 include(":microsoft:xbox")
 
 include(":fmod")
-include(":xhook")
-include(":substrate")
 
 include(":assets-pack")
