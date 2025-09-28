@@ -1,4 +1,4 @@
-rootProject.name = "ModdedPE"
+rootProject.name = "ModdedPE-Plus"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -34,7 +34,6 @@ dependencyResolutionManagement {
 }
 
 include(":app")
-include(":minecraft-app")
 
 include(":minecraft")
 include(":httpclient")

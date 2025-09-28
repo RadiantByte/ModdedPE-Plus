@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    namespace = "com.mcal.mcpelauncher"
+    namespace = "com.radiantbyte.moddedpe.plus"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     ndkVersion = "26.1.10909125"
 
     defaultConfig {
-        applicationId = "com.mcal.mcpelauncher"
+        applicationId = "com.radiantbyte.moddedpe.plus"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

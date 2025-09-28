@@ -1,10 +1,10 @@
-# ModdedPE
+# ModdedPE Plus
 
-A modern, enhanced fork of the original ModdedPE launcher with significant improvements and new features.
+A modern, enhanced fork of the original ModdedPE project with significant improvements and new features.
 
-## What is ModdedPE?
+## What is ModdedPE Plus?
 
-ModdedPE is an advanced Minecraft Pocket Edition launcher that allows you to load NMods and shared object (.so) modifications. This fork has been completely rewritten with modern Android development practices, featuring a brand new Jetpack Compose UI and expanded modding capabilities.
+ModdedPE Plus is an advanced Minecraft Pocket Edition launcher that allows you to load NMods and shared object (.so) modifications. This fork has been completely rewritten with modern Android development practices, featuring a brand new Jetpack Compose UI and expanded modding capabilities.
 
 ## Key Features
 
@@ -20,7 +20,7 @@ ModdedPE is an advanced Minecraft Pocket Edition launcher that allows you to loa
 
 ## Supported Shared Object Mods
 
-The following .so mods are compatible with ModdedPE:
+The following .so mods are compatible with ModdedPE Plus:
 
 ### Core Mods
 - **[ForceCloseOreUI](https://github.com/QYCottage/ForceCloseOreUI)** - Disables Minecraft's new OreUI and restores the classic JSON-based UI
@@ -28,12 +28,12 @@ The following .so mods are compatible with ModdedPE:
   - 3D and 4D skins
   - Animated skins and capes
   - Render Dragon shaders
-- **[BetterRenderDragon](https://github.com/QYCottage/BetterRenderDragon)** - Provides shader-related enhancements, currently force enables vibrant visuals in ModdedPE
+- **[BetterRenderDragon](https://github.com/QYCottage/BetterRenderDragon)** - Provides shader-related enhancements, currently force enables vibrant visuals in ModdedPE Plus
 - **[MaterialBinLoader](https://github.com/ddf8196/MaterialBinLoader)** - Adds Render Dragon shader support
 
 ### Installation
 1. Download the desired .so mod files
-2. Open ModdedPE
+2. Open ModdedPE Plus
 3. Navigate to the Manage NMods tab
 4. Tap "Add SoMod" and select your .so files
 5. Enable the mods you want to use
@@ -45,8 +45,8 @@ The following .so mods are compatible with ModdedPE:
 - **[NMOD Examples](https://github.com/TimScriptov/NMOD-Examples)** - Sample code and tutorials for NMod development
 - **[NModAPI](https://github.com/TimScriptov/NModAPI)** - Open source API for developing MCPE launchers with NMod support
 
-### Using ModdedPE as a Library
-ModdedPE can be integrated into your own projects as a library, providing NMod loading capabilities to other applications.
+### Using ModdedPE Plus as a Library
+ModdedPE Plus can be integrated into your own projects as a library, providing NMod loading capabilities to other applications.
 
 ## TODO
 
@@ -63,7 +63,7 @@ This is an enhanced community fork of the original ModdedPE project by TimScript
 - **Original Repository**: [TimScriptov/ModdedPE](https://github.com/TimScriptov/ModdedPE)
 
 ### Fork Maintainer
-- **Enhanced Version**: [RadiantByte](https://github.com/RadiantByte)
+- **Plus Version**: [RadiantByte](https://github.com/RadiantByte)
 - **This Repository**: [RadiantByte/ModdedPE](https://github.com/RadiantByte/ModdedPE)
 
 ## Building
@@ -84,7 +84,7 @@ This project is licensed under the GNU General Public License v3.0 - see the ori
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests to help improve ModdedPE.
+Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests to help improve ModdedPE Plus.
 
 ## Disclaimer
 

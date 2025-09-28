@@ -29,7 +29,7 @@
     </queries>
 
     <application
-        android:name="com.mcal.mcpelauncher.ModdedPEApplication"
+        android:name="com.radiantbyte.moddedpe.plus.mcpelauncher.ModdedPEApplication"
         android:exported="true"
         android:hasCode="true"
         android:hasFragileUserData="true"
@@ -48,7 +48,7 @@
         tools:targetApi="r">
 
         <activity
-            android:name="com.mcal.mcpelauncher.activities.ComposeMainActivity"
+            android:name="com.radiantbyte.moddedpe.plus.mcpelauncher.activities.ComposeMainActivity"
             android:exported="true"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme">
@@ -59,37 +59,37 @@
         </activity>
 
         <activity
-            android:name="com.mcal.mcpelauncher.activities.ComposePreloadActivity"
+            android:name="com.radiantbyte.moddedpe.plus.mcpelauncher.activities.ComposePreloadActivity"
             android:label="@string/prestart_title"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme"/>
 
         <activity
-            android:name="com.mcal.mcpelauncher.activities.ComposeNModLoadFailActivity"
+            android:name="com.radiantbyte.moddedpe.plus.mcpelauncher.activities.ComposeNModLoadFailActivity"
             android:label="@string/nmods_load_failed_title"
             android:launchMode="singleTask"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme"/>
 
         <activity
-            android:name="com.mcal.mcpelauncher.activities.ComposeFilePickerActivity"
+            android:name="com.radiantbyte.moddedpe.plus.mcpelauncher.activities.ComposeFilePickerActivity"
             android:label="@string/nmod_picker_file_title"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme"/>
 
         <activity
-            android:name="com.mcal.mcpelauncher.activities.ComposePackagePickerActivity"
+            android:name="com.radiantbyte.moddedpe.plus.mcpelauncher.activities.ComposePackagePickerActivity"
             android:label="@string/nmod_picker_package_title"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme"/>
 
         <activity
-            android:name="com.mcal.mcpelauncher.activities.ComposeNModDescriptionActivity"
+            android:name="com.radiantbyte.moddedpe.plus.mcpelauncher.activities.ComposeNModDescriptionActivity"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme"/>
 
         <activity
-            android:name="com.mcal.mcpelauncher.activities.MinecraftActivity"
+            android:name="com.radiantbyte.moddedpe.plus.mcpelauncher.activities.MinecraftActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="fontScale|keyboard|keyboardHidden|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
             android:excludeFromRecents="false"
@@ -109,7 +109,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.mcal.mcpelauncher.fileprovider"
+            android:authorities="com.radiantbyte.moddedpe.plus.mcpelauncher.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
