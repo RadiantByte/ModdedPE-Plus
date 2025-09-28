@@ -172,7 +172,7 @@ fun AboutPage() {
                     Button(
                         onClick = {
                             val intent = Intent(Intent.ACTION_VIEW,
-                                "https://github.com/RadiantByte/ModdedPE".toUri())
+                                "https://github.com/RadiantByte/ModdedPE-Plus".toUri())
                             context.startActivity(intent)
                         },
                         modifier = Modifier.fillMaxWidth()
