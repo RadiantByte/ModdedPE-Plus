@@ -6,7 +6,7 @@
 #-packageobfuscationdictionary proguard-dictionary.txt
 #-classobfuscationdictionary proguard-dictionary.txt
 
--keep class com.mcal.pesdk.nativeapi.NativeUtils { *; }
+-keep class com.radiantbyte.moddedpe.plus.pesdk.nativeapi.NativeUtils { *; }
 
 -keep class com.microsoft.xal.androidjava.Storage { *; }
 -keep class com.microsoft.xal.androidjava.DeviceInfo { *; }

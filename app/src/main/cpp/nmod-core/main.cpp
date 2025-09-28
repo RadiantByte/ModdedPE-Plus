@@ -82,7 +82,7 @@ namespace NModAPI {
 // Register Natives
 //-------------------------------------------------------------
 
-extern "C" JNIEXPORT jboolean JNICALL Java_com_mcal_pesdk_nmod_NModLib_nativeRegisterNatives(JNIEnv*env, jclass thiz, jclass cls) {
+extern "C" JNIEXPORT jboolean JNICALL Java_com_radiantbyte_moddedpe_plus_pesdk_nmod_NModLib_nativeRegisterNatives(JNIEnv*env, jclass thiz, jclass cls) {
     JNINativeMethod methods[] = {
         {"nativeCallOnActivityFinish", "(Ljava/lang/String;Lcom/mojang/minecraftpe/MainActivity;)Z", (void *)&NModAPI::nativeCallOnActivityFinish},
         {"nativeCallOnLoad", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&NModAPI::nativeCallOnLoad},
@@ -94,7 +94,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_com_mcal_pesdk_nmod_NModLib_nativeReg
     return JNI_TRUE;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_com_mcal_pesdk_nativeapi_NativeUtils_nativeRegisterNatives(JNIEnv*env, jclass thiz, jclass cls) {
+extern "C" JNIEXPORT jboolean JNICALL Java_com_radiantbyte_moddedpe_plus_pesdk_nativeapi_NativeUtils_nativeRegisterNatives(JNIEnv*env, jclass thiz, jclass cls) {
     JNINativeMethod methods[] = {
         //{"nativeSetDataDirectory", "(Ljava/lang/String;)V", (void *)&NModAPI::nativeSetDataDirectory},
         {"nativeDemangle", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&NModAPI::nativeDemangle}
@@ -105,7 +105,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_com_mcal_pesdk_nativeapi_NativeUtils_
     return JNI_TRUE;
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_mcal_pesdk_nativeapi_LibraryLoader_nativeOnNModAPILoaded(JNIEnv*env, jclass thiz, jstring libPath) {
+extern "C" JNIEXPORT void JNICALL Java_com_radiantbyte_moddedpe_plus_pesdk_nativeapi_LibraryLoader_nativeOnNModAPILoaded(JNIEnv*env, jclass thiz, jstring libPath) {
     const char *mNativeLibPath;
     mNativeLibPath = toString(env, libPath).c_str();
     mMCPENativeLibPath = mNativeLibPath;

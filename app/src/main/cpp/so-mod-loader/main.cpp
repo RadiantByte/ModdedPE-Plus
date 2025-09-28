@@ -15,7 +15,7 @@ static bool endsWith(const std::string& s, const char* suf) {
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_mcal_pesdk_somod_SoModNativeLoader_nativeCallLeviEntry(JNIEnv* env, jclass, jstring cacheDir_) {
+Java_com_radiantbyte_moddedpe_plus_pesdk_somod_SoModNativeLoader_nativeCallLeviEntry(JNIEnv* env, jclass, jstring cacheDir_) {
     const char* cacheDir = env->GetStringUTFChars(cacheDir_, nullptr);
     std::string modsPath = std::string(cacheDir) + "/mods";
 
