@@ -60,19 +60,10 @@ object BrowserSelector {
         } else {
             val packageName = userDefaultBrowserInfo.packageName
             if (!browserSupportsCustomTabs(context, packageName)) {
-                Log.e("ModdedPE", "selectBrowser() Default browser does not support custom tabs.")
                 notes = "CTNotSupported"
             } else if (!browserAllowedForCustomTabs(context, packageName)) {
-                Log.e(
-                    "ModdedPE",
-                    "selectBrowser() Default browser supports custom tabs, but is not allowed."
-                )
                 notes = "CTSupportedButNotAllowed"
             } else {
-                Log.e(
-                    "ModdedPE",
-                    "selectBrowser() Default browser supports custom tabs and is allowed."
-                )
                 notes = "CTSupportedAndAllowed"
                 useCustomTabs = true
             }
@@ -86,12 +77,10 @@ object BrowserSelector {
         val resolveActivity = context.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
         return when (val packageName = resolveActivity?.activityInfo?.packageName) {
             null -> {
-                Log.e("ModdedPE", "userDefaultBrowserInfo() No default browser resolved.")
                 BrowserInfo("none", 0, "none")
             }
 
             "android" -> {
-                Log.e("ModdedPE", "userDefaultBrowserInfo() System resolved as default browser.")
                 BrowserInfo("android", 0, "none")
             }
 
@@ -102,13 +91,8 @@ object BrowserSelector {
                     versionCode = packageInfo.versionCode
                     versionName = packageInfo.versionName ?: "unknown"
                 } catch (e: PackageManager.NameNotFoundException) {
-                    Log.e("ModdedPE", "userDefaultBrowserInfo() Error in getPackageInfo(): $e")
                     versionName = EnvironmentCompat.MEDIA_UNKNOWN
                 }
-                Log.e(
-                    "ModdedPE",
-                    "userDefaultBrowserInfo() Found $packageName as user's default browser."
-                )
                 BrowserInfo(packageName, versionCode, versionName)
             }
         }
@@ -121,26 +105,6 @@ object BrowserSelector {
 
     @SuppressLint("PackageManagerGetSignatures")
     private fun browserAllowedForCustomTabs(context: Context, packageName: String): Boolean {
-//        val signatureBrowser = customTabsAllowedBrowsers[packageName] ?: return false
-//        try {
-//            val packageInfo = context.packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-//            if (packageInfo == null) {
-//                Log.e("ModdedPE", "No package info found for package: $packageName")
-//                return false
-//            }
-//            packageInfo.signatures?.let { signatures->
-//                for (signature in signatures) {
-//                    if (hashFromSignature(signature) == signatureBrowser) {
-//                        return true
-//                    }
-//                }
-//            }
-//        } catch (e: PackageManager.NameNotFoundException) {
-//            Log.e("ModdedPE", "browserAllowedForCustomTabs() Error in getPackageInfo(): $e")
-//        } catch (e: NoSuchAlgorithmException) {
-//            Log.e("ModdedPE", "browserAllowedForCustomTabs() Error in hashFromSignature(): $e")
-//        }
-//        return false
         val signatureBrowser = customTabsAllowedBrowsers[packageName] ?: return false
         try {
             val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -149,7 +113,6 @@ object BrowserSelector {
                 context.packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
             }
             if (packageInfo == null) {
-                Log.e("ModdedPE", "No package info found for package: $packageName")
                 return false
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -170,9 +133,7 @@ object BrowserSelector {
                 }
             }
         } catch (e: PackageManager.NameNotFoundException) {
-            Log.e("ModdedPE", "browserAllowedForCustomTabs() Error in getPackageInfo(): $e")
         } catch (e: NoSuchAlgorithmException) {
-            Log.e("ModdedPE", "browserAllowedForCustomTabs() Error in hashFromSignature(): $e")
         }
         return false
     }

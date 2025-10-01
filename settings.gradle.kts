@@ -43,3 +43,4 @@ include(":microsoft:xbox")
 include(":fmod")
 
 include(":assets-pack")
+include(":pairip")

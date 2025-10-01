@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
+    kotlin("kapt")
 }
 
 android {
@@ -28,6 +29,12 @@ android {
 }
 
 dependencies {
+    implementation(project(":pairip"))
+    implementation("androidx.room:room-runtime:2.8.1")
+    implementation("androidx.room:room-ktx:2.8.1")
+    implementation(libs.billing)
+    kapt("androidx.room:room-compiler:2.8.1")
+    implementation("androidx.sqlite:sqlite-framework:2.6.1")
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.browser)
