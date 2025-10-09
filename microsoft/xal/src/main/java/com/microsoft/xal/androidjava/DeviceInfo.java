@@ -6,11 +6,7 @@ import android.os.Build;
 import android.provider.Settings;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * 02.10.2020
- *
- * @author <a href="https://github.com/timscriptov">timscriptov</a>
- */
+
 
 public class DeviceInfo {
     public static String GetOsVersion() {

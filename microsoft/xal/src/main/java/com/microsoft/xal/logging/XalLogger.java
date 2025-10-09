@@ -8,11 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
-/**
- * 02.10.2020
- *
- * @author <a href="https://github.com/timscriptov">timscriptov</a>
- */
+
 
 public class XalLogger implements AutoCloseable {
     @SuppressLint("SimpleDateFormat")
