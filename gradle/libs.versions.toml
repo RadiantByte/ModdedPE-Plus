@@ -12,6 +12,8 @@ activity-ktx = "1.11.0"
 fragment-ktx = "1.8.9"
 materialIconsExtended = "1.7.8"
 playServicesAds = "24.6.0"
+roomRuntime = "2.8.2"
+sqlite = "2.6.1"
 wortise-sdk = "1.5.1"
 annotation = "1.9.1"
 annotations = "26.0.2-1"
@@ -53,10 +55,16 @@ compose-bom = "2025.09.00"
 exposed = "0.61.0"
 xerial = "3.50.3.0"
 tvMaterial = "1.0.1"
+billing = "8.0.0"
 
 [libraries]
 androidx-games-activity = { module = "androidx.games:games-activity", version.ref = "gamesActivity" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-sqlite = { module = "androidx.sqlite:sqlite", version.ref = "sqlite" }
+androidx-sqlite-framework = { module = "androidx.sqlite:sqlite-framework", version.ref = "sqlite" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 wortise-sdk = { module = "com.wortise:android-sdk", version.ref = "wortise-sdk" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity-ktx" }
@@ -128,6 +136,7 @@ voyager-tabNavigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", v
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
 androidx-tv-material = { group = "androidx.tv", name = "tv-material", version.ref = "tvMaterial" }
+billing = { group = "com.android.billingclient", name = "billing", version.ref = "billing" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
